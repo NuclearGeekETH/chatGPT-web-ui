@@ -28,6 +28,8 @@ pip install -r requirements.txt
 
   ```
   mv .env.example .env
+  windows:
+  move .env.example .env
   ```
 - Replace `your_openai_key` with your actual OpenAI API key.
   ```
