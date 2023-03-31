@@ -7,13 +7,13 @@ NuclearGeek's ChatGPT is an interactive chatbot application utilizing OpenAI's G
 1. Clone the repository:
 
 ```
-git clone https://github.com/yourusername/nucleargeeks-chatgpt.git
+git clone https://github.com/NuclearGeekETH/chatGPT-web-ui.git
 ```
 
 2. Navigate to the project directory:
 
 ```
-cd nucleargeeks-chatgpt
+cd chatGPT-web-ui
 ```
 
 3. Install the required dependencies:
@@ -24,18 +24,14 @@ pip install -r requirements.txt
 
 4. Set up your OpenAI API key:
 
-- Create a `.env.example` file in the project directory with the following content:
-
-  ```
-  openai_key=your_openai_key
-  ```
-
-- Replace `your_openai_key` with your actual OpenAI API key.
-
 - Rename `.env.example` to `.env`:
 
   ```
   mv .env.example .env
+  ```
+- Replace `your_openai_key` with your actual OpenAI API key.
+  ```
+  openai_key=your_openai_key
   ```
 
 ## Running the Chatbot
@@ -43,7 +39,7 @@ pip install -r requirements.txt
 1. Start the chatbot application by running:
 
 ```
-python chatgpt.py
+python launch.py
 ```
 
 2. Access the Gradio interface through the URL displayed in the terminal.
