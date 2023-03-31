@@ -51,3 +51,9 @@ python launch.py
 4. If you have previous chat history, paste it in the 'Previous Chat History' textbox.
 
 5. To clear the chat history during a session, check the 'Clear chat history' checkbox.
+
+## TODO
+
+- Fix the conversation history pkl file so it saves the complete history
+- Add previous history to the UI
+- Add your own personas to chat with
