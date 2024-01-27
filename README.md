@@ -1,6 +1,6 @@
 # NuclearGeek's ChatGPT
 
-NuclearGeek's ChatGPT is an interactive chatbot application utilizing OpenAI's GPT Language Models. With a user-friendly Gradio interface, it allows the user to communicate with the ChatGPT, analyze images with Vision, and create images with Dall-e-3. The application supports multiple GPT models and is designed with a set of examples to provide a good starting point for various conversational scenarios. Tabs include Chat, Vision, and Dalle.
+NuclearGeek's ChatGPT is an interactive chatbot application utilizing OpenAI's GPT Language Models. With a user-friendly Gradio interface, it allows the user to communicate with various OpenAI models, analyze images with Vision, and create images with Dall-e-3. The application supports multiple GPT models and is designed with a set of examples to provide a good starting point for various conversational scenarios. Tabs include Chat, Vision, and Dalle.
 
 ## Installation & Setup
 
