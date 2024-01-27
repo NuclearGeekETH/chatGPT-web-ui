@@ -21,8 +21,10 @@ cd chatGPT-web-ui
 - Rename `.env.example` to `.env`:
 
   ```
+  # For macOS and Linux:
   mv .env.example .env
-  windows:
+
+  # For Windows (already included, but reiterated for clarity):
   move .env.example .env
   ```
 - Replace `your_openai_key` with your actual OpenAI API key.
@@ -32,11 +34,35 @@ cd chatGPT-web-ui
 
 ## Running the Chatbot
 
+# For Windows Users:
+
 1. Start the chatbot application by double clicking on the `startup_chat.bat` file.
 
 2. Access the Gradio interface through the URL displayed in the terminal.
 
 3. Choose a GPT model, enter a system message or select one from the provided examples, and start chatting with the chatbot.
+
+# For macOS Users:
+
+1. Open Terminal in your macOS.
+
+2. Navigate to the project directory if you're not already there.
+
+3. Run the following command to start the chatbot application (assumes you have the necessary runtime environment like Python and required libraries installed):
+
+```
+bash startup_chat.sh
+```
+
+if `startup_chat.sh` does not work then setup environment manually using `python3 -m venv venv`, then use `source venv/bin/activate` and `pip install -r requirements.txt`, and finally `python3 chat_interface.py`.
+
+4. Access the Gradio interface through the URL displayed in the Terminal.
+
+## Common Steps
+
+  - Choose a GPT model, enter a system message or select one from the provided examples, and start chatting with the chatbot.
+
+Note: The instructions for macOS assume that the Gradio app and any other necessary software can be started with a script similar to `startup_chat.bat` for Windows or a direct command like `python3 chat_interface.py`. If the original setup requires additional steps not covered here (like setting up a virtual environment, installing dependencies, or other preparatory steps specific to the application), you would need to follow those steps accordingly.
 
 
 
