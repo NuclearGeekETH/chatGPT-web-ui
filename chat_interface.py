@@ -33,16 +33,26 @@ def chat_response(message, history, model, system):
 
     history_response.append({"role": "user", "content": message})
 
-    completion = openai.chat.completions.create(
-        model = model,
-        messages = history_response
-    )
+    try:
+        completion = openai.chat.completions.create(
+            model = model,
+            messages = history_response
+        )
 
-    answer = completion.choices[0].message.content
+        answer = completion.choices[0].message.content
 
-    return answer
-
-def dalle_response(message, history):
+        return answer
+    except openai.APIError as e:
+        #Handle API error here, e.g. retry or log
+        return(f"OpenAI API returned an API Error: {e}")
+    except openai.APIConnectionError as e:
+        #Handle connection error here
+        return(f"Failed to connect to OpenAI API: {e}")
+    except openai.RateLimitError as e:
+        #Handle rate limit error (we recommend using exponential backoff)
+        return(f"OpenAI API request exceeded rate limit: {e}")
+        
+def dalle_response(message, history, size, quality, style):
     history_response = []
 
     for human, assistant in history:
@@ -51,20 +61,25 @@ def dalle_response(message, history):
 
     history_response.append({"role": "user", "content": message})
     
-    response = openai.images.generate(
-    model = "dall-e-3",
-    prompt = message,
-    size = "1024x1024",
-    quality = "hd",
-    style = "vivid", # natural
-    n = 1,
-    )
+    try:
+        response = openai.images.generate(
+        model = "dall-e-3",
+        prompt = message,
+        size = size,
+        quality = quality,
+        style = style, # natural
+        n = 1,
+        )
 
-    image_url = response.data[0].url
+        image_url = response.data[0].url
 
-    revised_prompt = response.data[0].revised_prompt
+        revised_prompt = response.data[0].revised_prompt
 
-    return(f"{revised_prompt}\n\n{image_url}")
+        return(f"{revised_prompt}\n\n{image_url}")
+    
+    except openai.BadRequestError as e:
+        return(f"ERROR: {e}")
+
 
 def vision_response(message, history, image=None):
     history_response = []
@@ -103,10 +118,14 @@ def vision_response(message, history, image=None):
             "messages": history_response,
             "max_tokens": 1000
         }
-        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-        result = response.json()["choices"][0]["message"]["content"]
+        try:
+            response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+            result = response.json()["choices"][0]["message"]["content"]
 
-        return(result)
+            return(result)
+        
+        except:
+            return(f"ERROR: {response}")
 
     else:
         history_response.append({"role": "user", "content": message})
@@ -176,7 +195,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
     # Vision Tab
     with gr.Tab("Vision"):
-        gr.Markdown(f"<p>{'Analyze an image'}</p>")
+        gr.Markdown(f"<p>{'Ask questions about an image'}</p>")
         with gr.Row():
             bot = gr.Chatbot(render=False)
 
@@ -196,16 +215,37 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
     # Dalle Tab
     with gr.Tab("Dall-e"):
-        gr.Markdown(f"<p>{'Create image with Dall-e'}</p>")
+        gr.Markdown(f"<p>{'Create images with Dall-e-3'}</p>")
 
         bot = gr.Chatbot(render=False)
 
+        with gr.Row():
+            size_dropdown = gr.Dropdown(
+                ["1024x1024", "1792x1024", "1024x1792"],
+                label = "Height",
+                value = "1024x1024",
+                render = True
+            )
+
+            quality_dropdown = gr.Dropdown(
+                ["hd", "standard"],
+                label = "Quality",
+                value = "hd",
+                render = True
+            )
+
+            style_dropdown = gr.Dropdown(
+                ["vivid", "natural"],
+                label = "Style",
+                value = "vivid",
+                render = True
+            )
+
         chat = gr.ChatInterface(
             fn = dalle_response,
-            chatbot = bot
+            chatbot = bot,
+            additional_inputs = [size_dropdown, quality_dropdown, style_dropdown]
         )
-
-
 
 if __name__ == "__main__":
     demo.queue()
