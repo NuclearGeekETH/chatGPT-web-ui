@@ -6,6 +6,8 @@ from datetime import date
 import base64
 import io
 import requests
+from PIL import Image
+import numpy as np
 
 load_dotenv()
 
@@ -58,14 +60,7 @@ def chat_response(message, history, model, system):
         #Handle rate limit error (we recommend using exponential backoff)
         return(f"OpenAI API request exceeded rate limit: {e}")
         
-def dalle_response(message, history, size, quality, style):
-    history_response = []
-
-    for human, assistant in history:
-        history_response.append({"role": "user", "content": human})
-        history_response.append({"role": "assistant", "content": assistant})
-
-    history_response.append({"role": "user", "content": message})
+def dalle_response(message, size, quality, style):
     
     try:
         response = openai.images.generate(
@@ -75,13 +70,21 @@ def dalle_response(message, history, size, quality, style):
         quality = quality,
         style = style, # natural
         n = 1,
+        response_format = "b64_json" # b64_json url
         )
+
+        # print(response)
 
         image_url = response.data[0].url
 
+        image_data = response.data[0].b64_json
+        img_bytes = base64.b64decode(image_data)
+        img = Image.open(io.BytesIO(img_bytes))
+        img_array = np.array(img)
+
         revised_prompt = response.data[0].revised_prompt
 
-        return(f"{revised_prompt}\n\n{image_url}")
+        return(revised_prompt, img_array)
     
     except openai.BadRequestError as e:
         return(f"ERROR: {e}")
@@ -232,27 +235,27 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                 ["1024x1024", "1792x1024", "1024x1792"],
                 label = "Height",
                 value = "1024x1024",
-                render = True
+                render = False
             )
 
             quality_dropdown = gr.Dropdown(
                 ["hd", "standard"],
                 label = "Quality",
                 value = "hd",
-                render = True
+                render = False
             )
 
             style_dropdown = gr.Dropdown(
                 ["vivid", "natural"],
                 label = "Style",
                 value = "vivid",
-                render = True
+                render = False
             )
 
-        chat = gr.ChatInterface(
+        chat = gr.Interface(
             fn = dalle_response,
-            chatbot = bot,
-            additional_inputs = [size_dropdown, quality_dropdown, style_dropdown]
+            inputs = [gr.Text(label="Input Prompt"), size_dropdown, quality_dropdown, style_dropdown], 
+            outputs=[gr.Text(label="Output Prompt"), gr.Image(type="numpy", label="Output Image")]
         )
 
 if __name__ == "__main__":
