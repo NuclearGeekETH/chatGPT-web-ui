@@ -24,7 +24,7 @@ cd chatGPT-web-ui
   # For macOS and Linux:
   mv .env.example .env
 
-  # For Windows (already included, but reiterated for clarity):
+  # For Windows:
   move .env.example .env
   ```
 - Replace `your_openai_key` with your actual OpenAI API key.
