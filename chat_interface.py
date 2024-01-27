@@ -64,18 +64,14 @@ def dalle_response(message, size, quality, style):
     
     try:
         response = openai.images.generate(
-        model = "dall-e-3",
-        prompt = message,
-        size = size,
-        quality = quality,
-        style = style, # natural
-        n = 1,
-        response_format = "b64_json" # b64_json url
+            model = "dall-e-3",
+            prompt = message,
+            size = size,
+            quality = quality,
+            style = style, # natural
+            n = 1,
+            response_format = "b64_json" # b64_json url
         )
-
-        # print(response)
-
-        image_url = response.data[0].url
 
         image_data = response.data[0].b64_json
         img_bytes = base64.b64decode(image_data)
