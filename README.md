@@ -48,11 +48,10 @@ cd chatGPT-web-ui
 
 2. Navigate to the project directory if you're not already there.
 
-3. Before running this script on macOS, ensure you have the necessary permissions to execute it by running 
+3. Before running this script on macOS, ensure you have the necessary permissions to execute it by running the following command in your terminal. This grants execution rights to the script:
 ```
 chmod +x startup_chat.sh
 ```
-in your terminal. This grants execution rights to the script.
 
 4. Run the following command to start the chatbot application (assumes you have the necessary runtime environment like Python and required libraries installed):
 
