@@ -48,7 +48,9 @@ cd chatGPT-web-ui
 
 2. Navigate to the project directory if you're not already there.
 
-3. Run the following command to start the chatbot application (assumes you have the necessary runtime environment like Python and required libraries installed):
+3. Before running this script on macOS, ensure you have the necessary permissions to execute it by running `chmod +x startup_chat.sh` in your terminal. This grants execution rights to the script.
+
+4. Run the following command to start the chatbot application (assumes you have the necessary runtime environment like Python and required libraries installed):
 
 ```
 bash startup_chat.sh
@@ -56,7 +58,7 @@ bash startup_chat.sh
 
 if `startup_chat.sh` does not work then setup environment manually using `python3 -m venv venv`, then use `source venv/bin/activate` and `pip install -r requirements.txt`, and finally `python3 chat_interface.py`.
 
-4. Access the Gradio interface through the URL displayed in the Terminal.
+5. Access the Gradio interface through the URL displayed in the Terminal.
 
 ## Common Steps
 
