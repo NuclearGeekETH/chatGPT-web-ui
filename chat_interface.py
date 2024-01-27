@@ -40,9 +40,7 @@ def chat_response(message, history, model, system):
             stream=True
         )
 
-        # answer = completion.choices[0].message.content
-
-        # return answer
+        # Stream Response
         partial_message = ""
         for chunk in completion:
             if chunk.choices[0].delta.content != None:
