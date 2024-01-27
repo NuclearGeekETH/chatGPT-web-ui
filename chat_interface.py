@@ -36,12 +36,20 @@ def chat_response(message, history, model, system):
     try:
         completion = openai.chat.completions.create(
             model = model,
-            messages = history_response
+            messages = history_response,
+            stream=True
         )
 
-        answer = completion.choices[0].message.content
+        # answer = completion.choices[0].message.content
 
-        return answer
+        # return answer
+        partial_message = ""
+        for chunk in completion:
+            if chunk.choices[0].delta.content != None:
+                partial_message = partial_message + str(chunk.choices[0].delta.content)
+                if partial_message:
+                    yield partial_message
+
     except openai.APIError as e:
         #Handle API error here, e.g. retry or log
         return(f"OpenAI API returned an API Error: {e}")
