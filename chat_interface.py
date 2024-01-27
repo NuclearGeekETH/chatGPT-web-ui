@@ -146,20 +146,22 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
     # ChatGPT Tab
     with gr.Tab("Chat"):
+        gr.Markdown(f"<p>{'Use ChatGPT with optional parameters below'}</p>")
+
         bot = gr.Chatbot(render=False)
 
         dropdown = gr.Dropdown(
-            ["gpt-4-0125-preview", "gpt-4-turbo-preview", "gpt-4-1106-preview", "gpt-3.5-turbo-1106", "gpt-4"],
+            ["gpt-4-0125-preview", "gpt-4-turbo-preview", "gpt-4-1106-preview", "gpt-4", "gpt-3.5-turbo-1106", "gpt-3.5-turbo"],
             label = "Model",
             value = "gpt-4-0125-preview",
-            render = True
+            render = False
         )
 
         system = gr.Textbox(
             lines = 2,
             label = "System Message",
             value = f"You are ChatGPT, a large language model trained by OpenAI based on the GPT-4 architecture.",
-            render = True
+            render = False
             )
 
         chat = gr.ChatInterface(
