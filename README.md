@@ -16,13 +16,7 @@ git clone https://github.com/NuclearGeekETH/chatGPT-web-ui.git
 cd chatGPT-web-ui
 ```
 
-3. Install the required dependencies:
-
-```
-pip install -r requirements.txt
-```
-
-4. Set up your OpenAI API key:
+3. Set up your OpenAI API key:
 
 - Rename `.env.example` to `.env`:
 
