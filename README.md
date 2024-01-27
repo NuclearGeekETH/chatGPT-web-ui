@@ -34,7 +34,7 @@ cd chatGPT-web-ui
 
 ## Running the Chatbot
 
-# For Windows Users:
+### For Windows Users:
 
 1. Start the chatbot application by double clicking on the `startup_chat.bat` file.
 
@@ -42,7 +42,7 @@ cd chatGPT-web-ui
 
 3. Choose a GPT model, enter a system message or select one from the provided examples, and start chatting with the chatbot.
 
-# For macOS Users:
+### For macOS Users:
 
 1. Open Terminal in your macOS.
 
