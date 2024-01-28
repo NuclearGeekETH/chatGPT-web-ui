@@ -431,7 +431,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
 if __name__ == "__main__":
     demo.queue()
     # # Toggle this on if you want to share you app, change the username and password
-    # demo.launch(server_port=7862, share=True, auth=("nuke", "today123"))
+    # demo.launch(server_port=7862, share=True, auth=("admin", "today123"))
 
     # Toggle this on if you want to only run local
     demo.launch(server_port=7862)
