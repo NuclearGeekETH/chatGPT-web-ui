@@ -9,10 +9,14 @@ import requests
 from PIL import Image
 import numpy as np
 from pathlib import Path
+from datetime import datetime
 
 load_dotenv()
 
 key = os.getenv("OPENAI_API_KEY")
+subscription_key = os.getenv('BING_SEARCH_V7_SUBSCRIPTION_KEY')
+search_endpoint =  "https://api.bing.microsoft.com/v7.0/search"
+news_endpoint =  "https://api.bing.microsoft.com/v7.0/news/search"
 
 openai.api_key = key
 
@@ -163,6 +167,105 @@ def vision_response(message, history, image=None):
 
         return answer
 
+def bing_search(text, history):
+    """
+    Use Bing API to performa a web search and return the first 10 snippets.
+    """
+    # Query term(s) to search for. 
+    # Construct a request
+    params = {'q': text}
+    headers = { 'Ocp-Apim-Subscription-Key': subscription_key }
+
+    # Call the API
+    try:
+        response = requests.get(search_endpoint, headers=headers, params=params)
+        response.raise_for_status()
+
+        # Parse the response JSON
+        search_results = response.json()
+
+        # Check if there are webPages results available
+        if 'webPages' in search_results and 'value' in search_results['webPages']:
+
+            message_response = []
+
+            for result in search_results['webPages']['value']:
+                print(result)
+                name = result["name"] 
+                url = result["url"]
+                article_date = result.get("datePublishedDisplayText", "No Date Given")
+                snippet = result["snippet"]
+
+                message = F"{name}\n{url}\n{article_date}\n{snippet}\n\n"
+
+                message_response.append(message)
+
+            print(message_response)
+
+            concatenated_message = ' '.join(message_response)
+
+            print(concatenated_message)
+
+            return concatenated_message
+
+        else:
+            return "No web page results found."
+    
+    except Exception as ex:
+        return F"Something went wrong: {ex}"
+
+def bing_news(text, history):
+    """
+    Use Bing API to performa a news search and return the first snippet.
+    """
+    # Query term(s) to search for. 
+    # Construct a request
+    params = {'q': text}
+    headers = { 'Ocp-Apim-Subscription-Key': subscription_key }
+
+    # Call the API
+    try:
+        response = requests.get(news_endpoint, headers=headers, params=params)
+        response.raise_for_status()
+
+        # Parse the response JSON
+        search_results = response.json()
+
+        # Check if there are webPages results available
+        if 'value' in search_results:
+            
+            message_response = []
+
+            for article in search_results["value"]:
+                print(article)
+
+                name = article["name"]
+                url = article["url"]
+                description = article["description"]
+                date_published = article["datePublished"]
+                
+                date_obj = datetime.fromisoformat(date_published.replace('Z', '+00:00'))
+
+                # Format the datetime object into a more readable string
+                # For example: "January 09, 2024 at 21:18"
+                readable_date = date_obj.strftime("%B %d, %Y at %H:%M")
+
+                message = F"{name}\n{url}\n{readable_date}\n{description}\n\n"
+
+                message_response.append(message)
+
+
+            concatenated_snippets = ' '.join(message_response)
+
+            return concatenated_snippets
+
+        else:
+            return "No news results found."
+    
+    except Exception as ex:
+        return f"Something went wrong: {ex}"
+
+
 with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
     gr.Markdown(f"<h1 style='text-align: center; display:block'>{'Nuke&apos;s ChatGPT'}</h1>")
 
@@ -277,6 +380,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
             outputs=[gr.Text(label="Output Prompt"), gr.Image(type="numpy", label="Output Image")]
         )
 
+    # TTS Tab
     with gr.Tab("TTS"):
         gr.Markdown(f"<p>{'Create Text-To-Speech'}</p>")
 
@@ -301,6 +405,28 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
             fn = tts_response,
             inputs = [gr.Text(label="Input Prompt"), voice_dropdown, model_dropdown], 
             outputs=[gr.Audio(label="Output Audio")]
+        )
+
+    # WebChat Tab
+    with gr.Tab("WebChat"):
+        gr.Markdown(f"<p>{'Get Web Search Snippets'}</p>")
+
+        bot = gr.Chatbot(render=False)
+
+        chat = gr.ChatInterface(
+            fn = bing_search,
+            chatbot = bot,
+        )
+
+    # NewsChat Tab
+    with gr.Tab("NewsChat"):
+        gr.Markdown(f"<p>{'Get News Search Snippets'}</p>")
+
+        bot = gr.Chatbot(render=False)
+
+        chat = gr.ChatInterface(
+            fn = bing_news,
+            chatbot = bot,
         )
 
 

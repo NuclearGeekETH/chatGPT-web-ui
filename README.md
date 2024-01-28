@@ -1,6 +1,6 @@
 # NuclearGeek's ChatGPT
 
-NuclearGeek's ChatGPT is an interactive chatbot application utilizing OpenAI's GPT Language Models. With a user-friendly Gradio interface, it allows the user to communicate with various OpenAI models, analyze images with Vision, and create images with Dall-e-3. The application supports multiple GPT models and is designed with a set of examples to provide a good starting point for various conversational scenarios. Tabs include Chat, Vision, and Dalle.
+NuclearGeek's ChatGPT is an interactive chatbot application utilizing OpenAI's GPT Language Models. With a user-friendly Gradio interface, it allows the user to communicate with various OpenAI models, analyze images with Vision, create images with Dall-e-3, or search the web and news articles with Bing. The application supports multiple GPT models and is designed with a set of examples to provide a good starting point for various conversational scenarios. Tabs include Chat, Vision, Dalle, Web Search, and News.
 
 ## Installation & Setup
 
@@ -16,7 +16,7 @@ git clone https://github.com/NuclearGeekETH/chatGPT-web-ui.git
 cd chatGPT-web-ui
 ```
 
-3. Set up your OpenAI API key:
+3. Set up your OpenAI API and Bing key:
 
 - Rename `.env.example` to `.env`:
 
@@ -27,9 +27,10 @@ cd chatGPT-web-ui
   # For Windows:
   move .env.example .env
   ```
-- Replace `your_openai_key` with your actual OpenAI API key.
+- Replace `your_openai_key` with your actual OpenAI and Bing API keys.
   ```
   OPENAI_API_KEY=your_openai_key
+  BING_SEARCH_V7_SUBSCRIPTION_KEY=your_bing_key
   ```
 
 ## Running the Chatbot
@@ -66,6 +67,8 @@ cd chatGPT-web-ui
 ## Common Steps
 
   - Choose a GPT model, enter a system message or select one from the provided examples, and start chatting with the chatbot.
+
+  - For web and news search using bing, just use simple search terms like you would in a search engine.
 
 Note: The instructions for macOS assume that the Gradio app and any other necessary software can be started with a script similar to `startup_chat.bat` for Windows or a direct command like `python3 chat_interface.py`. If the original setup requires additional steps not covered here (like setting up a virtual environment, installing dependencies, or other preparatory steps specific to the application), you would need to follow those steps accordingly.
 
