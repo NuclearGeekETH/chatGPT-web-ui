@@ -243,7 +243,7 @@ def bing_news(text, history):
                 url = article["url"]
                 description = article["description"]
                 date_published = article["datePublished"]
-                
+
                 date_obj = datetime.fromisoformat(date_published.replace('Z', '+00:00'))
 
                 # Format the datetime object into a more readable string
@@ -408,7 +408,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
         )
 
     # WebChat Tab
-    with gr.Tab("WebChat"):
+    with gr.Tab("WebSearch"):
         gr.Markdown(f"<p>{'Get Web Search Snippets'}</p>")
 
         bot = gr.Chatbot(render=False)
@@ -419,7 +419,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
         )
 
     # NewsChat Tab
-    with gr.Tab("NewsChat"):
+    with gr.Tab("NewsSearch"):
         gr.Markdown(f"<p>{'Get News Search Snippets'}</p>")
 
         bot = gr.Chatbot(render=False)
