@@ -163,7 +163,7 @@ def vision_response(message, history, image=None):
 
         return answer
 
-with gr.Blocks(theme=gr.themes.Soft()) as demo:
+with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
     gr.Markdown(f"<h1 style='text-align: center; display:block'>{'Nuke&apos;s ChatGPT'}</h1>")
 
     # ChatGPT Tab
