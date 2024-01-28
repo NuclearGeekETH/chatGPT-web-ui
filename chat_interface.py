@@ -190,7 +190,6 @@ def bing_search(text, history):
             message_response = []
 
             for result in search_results['webPages']['value']:
-                print(result)
                 name = result["name"] 
                 url = result["url"]
                 article_date = result.get("datePublishedDisplayText", "No Date Given")
@@ -200,11 +199,7 @@ def bing_search(text, history):
 
                 message_response.append(message)
 
-            print(message_response)
-
             concatenated_message = ' '.join(message_response)
-
-            print(concatenated_message)
 
             return concatenated_message
 
