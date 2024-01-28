@@ -8,6 +8,7 @@ import io
 import requests
 from PIL import Image
 import numpy as np
+from pathlib import Path
 
 load_dotenv()
 
@@ -85,6 +86,29 @@ def dalle_response(message, size, quality, style):
     except openai.BadRequestError as e:
         return(f"ERROR: {e}")
 
+def tts_response(message, voice, model):
+    speech_file_path = Path(__file__).parent / "speech.mp3"
+
+    try:
+        response = openai.audio.speech.create(
+            model = model,
+            voice = voice,
+            input = message
+        )
+
+        response.stream_to_file(speech_file_path)
+
+        return(speech_file_path)
+    
+    except openai.APIError as e:
+        #Handle API error here, e.g. retry or log
+        return(f"OpenAI API returned an API Error: {e}")
+    except openai.APIConnectionError as e:
+        #Handle connection error here
+        return(f"Failed to connect to OpenAI API: {e}")
+    except openai.RateLimitError as e:
+        #Handle rate limit error (we recommend using exponential backoff)
+        return(f"OpenAI API request exceeded rate limit: {e}")
 
 def vision_response(message, history, image=None):
     history_response = []
@@ -138,7 +162,6 @@ def vision_response(message, history, image=None):
         answer = "Please upload an image"
 
         return answer
-
 
 with gr.Blocks(theme=gr.themes.Soft()) as demo:
     gr.Markdown(f"<h1 style='text-align: center; display:block'>{'Nuke&apos;s ChatGPT'}</h1>")
@@ -253,6 +276,33 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
             inputs = [gr.Text(label="Input Prompt"), size_dropdown, quality_dropdown, style_dropdown], 
             outputs=[gr.Text(label="Output Prompt"), gr.Image(type="numpy", label="Output Image")]
         )
+
+    with gr.Tab("TTS"):
+        gr.Markdown(f"<p>{'Create Text-To-Speech'}</p>")
+
+        bot = gr.Chatbot(render=False)
+
+        with gr.Row():
+            voice_dropdown = gr.Dropdown(
+                ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
+                label = "Voice",
+                value = "alloy",
+                render = False
+            )
+
+            model_dropdown = gr.Dropdown(
+                ["tts-1", "tts-1-hd"],
+                label = "Model",
+                value = "tts-1",
+                render = False
+            )
+
+        chat = gr.Interface(
+            fn = tts_response,
+            inputs = [gr.Text(label="Input Prompt"), voice_dropdown, model_dropdown], 
+            outputs=[gr.Audio(label="Output Audio")]
+        )
+
 
 if __name__ == "__main__":
     demo.queue()
