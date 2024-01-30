@@ -10,6 +10,8 @@ from PIL import Image
 import numpy as np
 from pathlib import Path
 from datetime import datetime
+from modules.get_journals import get_soup_from_internet
+from modules.get_journals import get_books
 
 load_dotenv()
 
@@ -169,7 +171,7 @@ def vision_response(message, history, image=None):
 
 def bing_search(text, history):
     """
-    Use Bing API to performa a web search and return the first 10 snippets.
+    Use Bing API to perform a web search and return the first 10 snippets.
     """
     # Query term(s) to search for. 
     # Construct a request
@@ -211,7 +213,7 @@ def bing_search(text, history):
 
 def bing_news(text, history):
     """
-    Use Bing API to performa a news search and return the first snippet.
+    Use Bing API to perform a news search and return the first snippet.
     """
     # Query term(s) to search for. 
     # Construct a request
@@ -255,6 +257,47 @@ def bing_news(text, history):
         else:
             return "No news results found."
     
+    except Exception as ex:
+        return f"Something went wrong: {ex}"
+
+def annas_response(text, history):
+    """
+    Use Annas API to perform a journal search.
+    """
+    try:
+  
+        url_base = "https://annas-archive.org/search?"
+
+        title = text.replace(" ", "+")
+
+        final_url = f"{url_base}index=&q={title}&content=journal_article&ext=pdf&sort=newest&lang=en"
+
+        json_response = get_books(get_soup_from_internet(final_url))
+
+        message = []
+
+        for key in json_response:
+            item = json_response[key]
+            
+            message.append({
+                "title": item["title"],
+                "authors": item["authors"],
+                "href": item["href"]
+            })
+
+        formatted_message = ""
+
+        for book in message:
+            authors = book["authors"].replace(";", ", ")  # Simplify the authors string
+            
+            book_entry = f"📖  {book['title']}\n" \
+                        f"👥  {authors}\n" \
+                        f"🔗 **www.annas-archive.org{book['href']}**\n\n" \
+                        
+            formatted_message += book_entry
+
+        return formatted_message
+
     except Exception as ex:
         return f"Something went wrong: {ex}"
 
@@ -422,6 +465,16 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
             chatbot = bot,
         )
 
+    # AnnasChat Tab
+    with gr.Tab("AnnasSearch"):
+        gr.Markdown(f"<p>{'Use search terms to get journal links'}</p>")
+
+        bot = gr.Chatbot(render=False)
+
+        chat = gr.ChatInterface(
+            fn = annas_response,
+            chatbot = bot
+        )
 
 if __name__ == "__main__":
     demo.queue()
