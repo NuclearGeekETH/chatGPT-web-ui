@@ -194,10 +194,12 @@ def bing_search(text, history):
             for result in search_results['webPages']['value']:
                 name = result["name"] 
                 url = result["url"]
-                article_date = result.get("datePublishedDisplayText", "No Date Given")
                 snippet = result["snippet"]
 
-                message = F"{name}\n{url}\n{article_date}\n{snippet}\n\n"
+                message = F"📖 {name}\n" \
+                    F"🔗 {url}\n" \
+                    F"📃 {snippet}\n\n"
+
 
                 message_response.append(message)
 
@@ -245,7 +247,10 @@ def bing_news(text, history):
                 # For example: "January 09, 2024 at 21:18"
                 readable_date = date_obj.strftime("%B %d, %Y at %H:%M")
 
-                message = F"{name}\n{url}\n{readable_date}\n{description}\n\n"
+                message = F"📖 {name}\n" \
+                    F"🔗 {url}\n" \
+                    F"📅 {readable_date}\n" \
+                    F"📃 {description}\n\n"
 
                 message_response.append(message)
 
