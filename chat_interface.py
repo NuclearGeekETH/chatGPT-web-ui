@@ -260,7 +260,7 @@ def bing_news(text, history):
     except Exception as ex:
         return f"Something went wrong: {ex}"
 
-def annas_response(text, history):
+def annas_response(text, history, content, filetype, sort):
     """
     Use Annas API to perform a journal search.
     """
@@ -270,7 +270,7 @@ def annas_response(text, history):
 
         title = text.replace(" ", "+")
 
-        final_url = f"{url_base}index=&q={title}&content=journal_article&ext=pdf&sort=newest&lang=en"
+        final_url = f"{url_base}index=&q={title}&content={content}&ext={filetype}&sort={sort}&lang=en"
 
         json_response = get_books(get_soup_from_internet(final_url))
 
@@ -285,7 +285,7 @@ def annas_response(text, history):
                 "href": item["href"]
             })
 
-        formatted_message = ""
+        formatted_message = f"{final_url}\n\n"
 
         for book in message:
             authors = book["authors"].replace(";", ", ")  # Simplify the authors string
@@ -471,9 +471,33 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
 
         bot = gr.Chatbot(render=False)
 
+        with gr.Row():
+            content_dropdown = gr.Dropdown(
+                ["book_nonfiction", "book_fiction", "book_unknown", "journal_article", "book_comic", "magazine", "standards_document"],
+                label = "Content Type",
+                value = "journal_article",
+                render = True
+            )
+
+            filetype_dropdown = gr.Dropdown(
+                ["pdf", "epub", "cbr", "mobi", "fb2", "cbz", "azw3", "djvu", "fb2.zip"],
+                label = "File Type",
+                value = "pdf",
+                render = True
+            )
+
+            sort_dropdown = gr.Dropdown(
+                ["newest", "oldest", "largest", "smallest"],
+                label = "Order by",
+                value = "newest",
+                render = True
+            )
+
+
         chat = gr.ChatInterface(
             fn = annas_response,
-            chatbot = bot
+            chatbot = bot,
+            additional_inputs = [content_dropdown, filetype_dropdown, sort_dropdown]
         )
 
 if __name__ == "__main__":

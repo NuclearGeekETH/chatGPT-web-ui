@@ -25,6 +25,8 @@ def get_books(page):
     
     a = page.find_all("a", class_="js-vim-focus")
 
+    # print(a)
+
     if len(a) == 0:
         return {"message": "No books found"}
 
