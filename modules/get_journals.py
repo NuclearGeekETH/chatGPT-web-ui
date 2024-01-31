@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 import requests
 
 def get_soup_from_internet(url):
@@ -15,6 +15,15 @@ def get_soup_from_internet(url):
     else:
         return None
 
+def extract_from_comments(soup):
+    comments = soup.find_all(string=lambda text: isinstance(text, Comment))
+    all_data = []
+    for comment in comments:
+        comment_soup = BeautifulSoup(comment, 'html.parser')
+        elements = comment_soup.find_all("a", class_="js-vim-focus")
+        all_data.extend(elements)
+    return all_data
+
 def get_books(page):
 
     if page == "Not valid url":
@@ -22,10 +31,8 @@ def get_books(page):
 
     elif page is None:
         return {"message": "internal error"}
-    
-    a = page.find_all("a", class_="js-vim-focus")
-
-    # print(a)
+       
+    a = extract_from_comments(page)
 
     if len(a) == 0:
         return {"message": "No books found"}
