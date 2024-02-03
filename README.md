@@ -70,6 +70,62 @@ cd chatGPT-web-ui
 
   - For web and news search using bing, just use simple search terms like you would in a search engine.
 
+##  Current Tabs
+
+### ChatGPT
+
+OpenAI's text generation models (often called generative pre-trained transformers or large language models) have been trained to understand natural language, code, and images. The models provide text outputs in response to their inputs. The inputs to these models are also referred to as "prompts". Designing a prompt is essentially how you “program” a large language model model, usually by providing instructions or some examples of how to successfully complete a task.
+
+Using OpenAI's text generation models, you can build applications to:
+
+  - Draft documents
+  - Write computer code
+  - Answer questions about a knowledge base
+  - Analyze texts
+  - Give software a natural language interface
+  - Tutor in a range of subjects
+  - Translate languages
+  - Simulate characters for games
+
+### Vision
+
+GPT-4 with Vision, sometimes referred to as GPT-4V or gpt-4-vision-preview in the API, allows the model to take in images and answer questions about them. Historically, language model systems have been limited by taking in a single input modality, text. For many use cases, this constrained the areas where models like GPT-4 could be used.
+
+GPT-4 with vision is currently available to all developers who have access to GPT-4 via the gpt-4-vision-preview model and the Chat Completions API which has been updated to support image inputs. Note that the Assistants API does not currently support image inputs.
+
+### Dall-e
+
+The image generations endpoint allows you to create an original image given a text prompt. When using DALL·E 3, images can have a size of 1024x1024, 1024x1792 or 1792x1024 pixels.
+
+By default, images are generated at standard quality, but when using DALL·E 3 you can set quality: "hd" for enhanced detail. Square, standard quality images are the fastest to generate.
+
+### Text-To-Speech
+
+The Audio API provides a speech endpoint based on our TTS (text-to-speech) model. It comes with 6 built-in voices and can be used to:
+
+  - Narrate a written blog post
+  - Produce spoken audio in multiple languages
+  - Give real time audio output using streaming
+
+#### Audio quality
+For real-time applications, the standard tts-1 model provides the lowest latency but at a lower quality than the tts-1-hd model. Due to the way the audio is generated, tts-1 is likely to generate content that has more static in certain situations than tts-1-hd. In some cases, the audio may not have noticeable differences depending on your listening device and the individual person.
+
+#### Voice options
+Experiment with different voices (alloy, echo, fable, onyx, nova, and shimmer) to find one that matches your desired tone and audience. The current voices are optimized for English.
+
+### Bing Web and News Search
+
+An easy-to-use, ad-free, commercial-grade search tool that lets you deliver the results you want.
+
+### Annas Search
+
+Search Anna's Archive. Anna's Archive mirrors Open Library, Library Genesis, Sci-Hub and Z-Library. Anna's Archive says that it does not host copyrighted materials and that it only indexes metadata that is already publicly available. As of February 1, 2024, Anna's Archive includes 25,530,302 books and 99,425,822 papers.
+
+### Indeed Job Search
+
+Keyword and Location based job search using the Indeed XML feed.
+
+
 Note: The instructions for macOS assume that the Gradio app and any other necessary software can be started with a script similar to `startup_chat.bat` for Windows or a direct command like `python3 chat_interface.py`. If the original setup requires additional steps not covered here (like setting up a virtual environment, installing dependencies, or other preparatory steps specific to the application), you would need to follow those steps accordingly.
 
 
