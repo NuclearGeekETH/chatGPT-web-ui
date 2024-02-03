@@ -8,6 +8,7 @@ import io
 import requests
 from PIL import Image
 import numpy as np
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from datetime import datetime
 from modules.get_journals import get_soup_from_internet
@@ -306,6 +307,45 @@ def annas_response(text, history, content, filetype, sort):
     except Exception as ex:
         return f"Something went wrong: {ex}"
 
+def parse_indeed_feed(text, history, location):
+    """
+    Fetch and parse the Indeed jobs RSS feed, returning jobs in a chatbot-friendly format.
+    """
+
+    # Replace 'your_rss_feed_url' with your actual RSS feed URL
+    rss_feed_url = f"https://www.indeed.com/rss?q={text}&l={location}&sort=date"
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+
+    try:
+        # Fetch the RSS feed data
+        response = requests.get(rss_feed_url, headers=headers)
+        response.raise_for_status()
+        
+        # Parse the XML from the response content
+        root = ET.fromstring(response.content)
+        
+        messages = []  # Will hold our job postings formatted for the chatbot
+        
+        # Iterate over each item in the feed
+        for item in root.findall('.//item'):
+            title = item.find('title').text
+            link = item.find('link').text
+            description = item.find('description').text.replace('&lt;br&gt;', '\n').replace('&amp;#8230;', '...')
+            
+            # Construct the message
+            message = F"📖 {title}\n" \
+                      F"🔗 {link}\n" \
+                      F"📃 {description}\n\n"
+            
+            messages.append(message)
+            
+        return ' '.join(messages)
+    
+    except Exception as ex:
+        return F"Something went wrong: {ex}"
 
 with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
     gr.Markdown(f"<h1 style='text-align: center; display:block'>{'Nuke&apos;s ChatGPT'}</h1>")
@@ -504,6 +544,26 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
             chatbot = bot,
             additional_inputs = [content_dropdown, filetype_dropdown, sort_dropdown]
         )
+
+    # IndeedChat Tab
+    with gr.Tab("IndeedSearch"):
+        gr.Markdown(f"<p>{'Use search terms to get job openings'}</p>")
+
+        bot = gr.Chatbot(render=False)
+
+        with gr.Row():
+            location_dropdown = gr.Textbox(
+                label = "Location",
+                value = "Remote",
+                render = True
+            )
+
+        chat = gr.ChatInterface(
+            fn = parse_indeed_feed,
+            chatbot = bot,
+            additional_inputs = [location_dropdown]
+        )
+
 
 if __name__ == "__main__":
     demo.queue()
