@@ -207,27 +207,7 @@ def google_vision_response(message, history, image=None):
     history_response.append({"role": "user", "parts": message})
 
     if image:
-        # base64_image = encode_image_to_base64(image)
-        # # include the image in the messages
-        # image_message = {
-        #     "role": "user",
-        #     "content": [
-        #         {
-        #             "type": "text",
-        #             "text": message
-        #         },
-        #         {
-        #             "type": "image_url",
-        #             "image_url": {
-        #             "url": f"data:image/jpeg;base64,{base64_image}"
-        #             }
-        #         }
-        #     ]
-        # }
-        # history_response.append(image_message)
-
         try:
-            print(history_response)
             model = genai.GenerativeModel('gemini-pro-vision')
             # response = model.generate_content(image)
             response = model.generate_content([message, image])
@@ -480,6 +460,17 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
             label = "System Message Examples"
         )
 
+    # GoogleGemini Tab
+    with gr.Tab("GeminiChat"):
+        gr.Markdown(f"<p>{'Use Google Gemini'}</p>")
+
+        bot = gr.Chatbot(render=False)
+
+        chat = gr.ChatInterface(
+            fn = google_chat_response,
+            chatbot = bot,
+        )
+
     # Vision Tab
     with gr.Tab("Vision"):
         gr.Markdown(f"<p>{'Ask questions about an image'}</p>")
@@ -519,17 +510,6 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
                 chatbot = bot,
                 additional_inputs = [image]
             )
-
-    # GoogleGemini Tab
-    with gr.Tab("GeminiChat"):
-        gr.Markdown(f"<p>{'Use Google Gemini'}</p>")
-
-        bot = gr.Chatbot(render=False)
-
-        chat = gr.ChatInterface(
-            fn = google_chat_response,
-            chatbot = bot,
-        )
 
     # Dalle Tab
     with gr.Tab("Dall-e"):
