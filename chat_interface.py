@@ -69,7 +69,7 @@ def chat_response(message, history, model, system):
         #Handle rate limit error (we recommend using exponential backoff)
         return(f"OpenAI API request exceeded rate limit: {e}")
 
-def google_chat_response(message, history, model, system):
+def google_chat_response(message, history):
     model = genai.GenerativeModel('gemini-pro')
 
     history_response = []
@@ -79,8 +79,7 @@ def google_chat_response(message, history, model, system):
         history_response.append({"role": "model", "parts": [assistant]})
 
     history_response.append({"role": "user", "parts": [message]})
-
-
+   
     try:
         response = model.generate_content(
             history_response,
