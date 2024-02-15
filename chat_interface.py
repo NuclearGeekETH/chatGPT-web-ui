@@ -82,15 +82,23 @@ def google_chat_response(message, history, model, system):
 
     history_response.append({"role": "user", "parts": [message]})
 
-    print(history_response)
+    # print(history_response)
 
     try:
-        response = model.generate_content(history_response)
+        response = model.generate_content(
+            history_response,
+            stream=True
+            )
 
-        print(response)
-        print(response.text)
+        # print(response)
+        # print(response.text)
 
-        return response.text
+        partial_message = ""
+        for chunk in response:
+            print(chunk.text)
+            partial_message = partial_message + str(chunk.text)
+            if partial_message:
+                yield partial_message
 
     # try:
     #     completion = openai.chat.completions.create(
