@@ -5,4 +5,5 @@ pillow
 numpy
 beautifulsoup4
 feedparser
+google-generativeai
 
