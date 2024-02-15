@@ -197,6 +197,52 @@ def vision_response(message, history, image=None):
 
         return answer
 
+def google_vision_response(message, history, image=None):
+    history_response = []
+
+    for human, assistant in history:
+        history_response.append({"role": "user", "parts": human})
+        history_response.append({"role": "model", "parts": assistant})
+
+    history_response.append({"role": "user", "parts": message})
+
+    if image:
+        # base64_image = encode_image_to_base64(image)
+        # # include the image in the messages
+        # image_message = {
+        #     "role": "user",
+        #     "content": [
+        #         {
+        #             "type": "text",
+        #             "text": message
+        #         },
+        #         {
+        #             "type": "image_url",
+        #             "image_url": {
+        #             "url": f"data:image/jpeg;base64,{base64_image}"
+        #             }
+        #         }
+        #     ]
+        # }
+        # history_response.append(image_message)
+
+        try:
+            print(history_response)
+            model = genai.GenerativeModel('gemini-pro-vision')
+            # response = model.generate_content(image)
+            response = model.generate_content([message, image])
+            response.resolve()
+            return response.text
+        except Exception as e:
+            return f'{type(e).__name__}: {e}'
+
+    else:
+        history_response.append({"role": "user", "content": message})
+
+        answer = "Please upload an image"
+
+        return answer
+
 def bing_search(text, history):
     """
     Use Bing API to perform a web search and return the first 10 snippets.
@@ -450,6 +496,26 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
 
             chat = gr.ChatInterface(
                 fn = vision_response,
+                chatbot = bot,
+                additional_inputs = [image]
+            )
+
+    # GoogleVision Tab
+    with gr.Tab("GeminiVision"):
+        gr.Markdown(f"<p>{'Ask Google Gemini questions about an image'}</p>")
+        with gr.Row():
+            bot = gr.Chatbot(render=False)
+
+            image = gr.Image(
+                label = "Image Input",
+                type = "pil",
+                render = True,
+                height = "512",
+                width = "512"
+            )
+
+            chat = gr.ChatInterface(
+                fn = google_vision_response,
                 chatbot = bot,
                 additional_inputs = [image]
             )
