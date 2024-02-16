@@ -27,13 +27,17 @@ cd chatGPT-web-ui
   # For Windows:
   move .env.example .env
   ```
-- Replace `your_openai_key` with your actual OpenAI and Bing API keys.
+- Replace `your_openai_key` with your actual OpenAI, Bing, Google, and Stability.ai API keys.
   ```
   OPENAI_API_KEY=your_openai_key
   BING_SEARCH_V7_SUBSCRIPTION_KEY=your_bing_key
   GOOGLE_API_KEY=your_google_key
   STABILITY_API_KEY-your_stability_key
   ```
+
+## Links to get API Keys:
+
+  - (OpenAI)[https://platform.openai.com/docs/quickstart?context=python]
 
 ## Running the Chatbot
 
