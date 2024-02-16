@@ -39,6 +39,12 @@ cd chatGPT-web-ui
 
   - [OpenAI](https://platform.openai.com/docs/quickstart?context=python)
 
+  - [Azure BING Search](https://azure.microsoft.com/en-us/pricing/details/cognitive-services/search-api/)
+
+  - [Google AI Studio](https://aistudio.google.com/app/apikey)
+
+  - [Stability.ai](https://platform.stability.ai/)
+
 ## Running the Chatbot
 
 ### For Windows Users:
