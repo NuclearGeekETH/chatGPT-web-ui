@@ -37,7 +37,7 @@ cd chatGPT-web-ui
 
 ## Links to get API Keys:
 
-  - (OpenAI)[https://platform.openai.com/docs/quickstart?context=python]
+  - [OpenAI](https://platform.openai.com/docs/quickstart?context=python)
 
 ## Running the Chatbot
 
