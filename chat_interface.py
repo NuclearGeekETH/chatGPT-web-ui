@@ -21,7 +21,8 @@ key = os.getenv("OPENAI_API_KEY")
 subscription_key = os.getenv('BING_SEARCH_V7_SUBSCRIPTION_KEY')
 search_endpoint =  "https://api.bing.microsoft.com/v7.0/search"
 news_endpoint =  "https://api.bing.microsoft.com/v7.0/news/search"
-GOOGLE_API_KEY= os.getenv('GOOGLE_API_KEY')
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+stability_key = os.getenv('STABILITY_API_KEY')
 
 genai.configure(api_key=GOOGLE_API_KEY)
 openai.api_key = key
@@ -118,6 +119,57 @@ def dalle_response(message, size, quality, style):
         return(revised_prompt, img_array)
     
     except openai.BadRequestError as e:
+        return(f"ERROR: {e}")
+
+def stable_text_to_image_response(positive_prompt, negative_prompt, width, height, cfg):
+    
+    try:
+        url = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image"
+
+        body = {
+        "steps": 40,
+        "width": width,
+        "height": height,
+        "seed": 0,
+        "cfg_scale": cfg,
+        "samples": 1,
+        "text_prompts": [
+            {
+            "text": positive_prompt,
+            "weight": 1
+            },
+            {
+            "text": negative_prompt,
+            "weight": -1
+            }
+        ],
+        }
+
+        headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {stability_key}",
+        }
+
+        response = requests.post(
+        url,
+        headers=headers,
+        json=body,
+        )
+
+        if response.status_code != 200:
+            return Exception("Non-200 response: " + str(response.text))
+
+        data = response.json()
+
+        for i, image in enumerate(data["artifacts"]):
+            img_bytes = base64.b64decode(image["base64"])
+            img = Image.open(io.BytesIO(img_bytes))
+            img_array = np.array(img)
+
+            return(img_array)
+        
+    except Exception as e:
         return(f"ERROR: {e}")
 
 def tts_response(message, voice, model):
@@ -543,7 +595,6 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
                 outputs=[gr.Audio(label="Output Audio")]
             )
 
-
     with gr.Tab("Google Gemini"):
 
         # GoogleGemini Tab
@@ -576,6 +627,43 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
                     chatbot = bot,
                     additional_inputs = [image]
                 )
+
+    with gr.Tab("Stability AI"):
+
+        # Text-to-Image Tab
+        with gr.Tab("Text-to-Image"):
+            gr.Markdown(f"<p>{'Create images with Stability.ai API'}</p>")
+
+            bot = gr.Chatbot(render=False)
+
+            with gr.Row():
+                width_slider = gr.Slider(
+                    512,1792,
+                    label = "Width",
+                    value = 1024,
+                    render = False
+                )
+
+                height_slider = gr.Slider(
+                    512,1792,
+                    label = "Height",
+                    value = 1024,
+                    render = False
+                )
+
+                cfg_slider = gr.Slider(
+                    0,15,
+                    label = "CFG",
+                    value = 7,
+                    render = False
+                )
+
+            chat = gr.Interface(
+                fn = stable_text_to_image_response,
+                inputs = [gr.Text(label="Input Prompt"), gr.Text(label="Negative Prompt"), width_slider, height_slider, cfg_slider], 
+                outputs=[gr.Image(type="numpy", label="Output Image")]
+            )
+
 
     with gr.Tab("Bing"):
 
