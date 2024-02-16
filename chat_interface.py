@@ -158,7 +158,7 @@ def stable_text_to_image_response(positive_prompt, negative_prompt, width, heigh
         )
 
         if response.status_code != 200:
-            return Exception("Non-200 response: " + str(response.text))
+            return(f"Non-200 response: {str(response.text)}")
 
         data = response.json()
 
@@ -203,7 +203,7 @@ def stable_image_to_image_response(positive_prompt, negative_prompt, strength_sl
             )
 
             if response.status_code != 200:
-                return ("Non-200 response: " + str(response.text))
+                return(f"Non-200 response: {str(response.text)}")
 
             data = response.json()
 
