@@ -664,7 +664,6 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
                 outputs=[gr.Image(type="numpy", label="Output Image")]
             )
 
-
     with gr.Tab("Bing"):
 
         # WebChat Tab
@@ -748,7 +747,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
 
 if __name__ == "__main__":
     demo.queue()
-    # # Toggle this on if you want to share you app, change the username and password
+    # # Toggle this on if you want to share your app, change the username and password
     # demo.launch(server_port=7862, share=True, auth=("admin", "password"))
 
     # Toggle this on if you want to only run local
