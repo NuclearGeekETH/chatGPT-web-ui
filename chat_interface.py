@@ -172,6 +172,55 @@ def stable_text_to_image_response(positive_prompt, negative_prompt, width, heigh
     except Exception as e:
         return(f"ERROR: {e}")
 
+def stable_image_to_image_response(positive_prompt, negative_prompt, strength_slider, cfg, image=None):
+    if image:
+        try:
+            buffered = io.BytesIO()
+            image.save(buffered, format="PNG")
+            buffered.seek(0)
+
+            response = requests.post(
+                "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image",
+                headers={
+                    "Accept": "application/json",
+                    "Authorization": f"Bearer {stability_key}"
+                },
+                files={
+                    "init_image": buffered
+                },
+                data={
+                    "init_image_mode": "IMAGE_STRENGTH",
+                    "image_strength": strength_slider,
+                    "steps": 40,
+                    "seed": 0,
+                    "cfg_scale": cfg,
+                    "samples": 1,
+                    "text_prompts[0][text]": positive_prompt,
+                    "text_prompts[0][weight]": 1,
+                    "text_prompts[1][text]": negative_prompt,
+                    "text_prompts[1][weight]": -1,
+                }
+            )
+
+            if response.status_code != 200:
+                return ("Non-200 response: " + str(response.text))
+
+            data = response.json()
+
+            for i, image in enumerate(data["artifacts"]):
+                img_bytes = base64.b64decode(image["base64"])
+                img = Image.open(io.BytesIO(img_bytes))
+                img_array = np.array(img)
+
+                return(img_array)
+                      
+        except Exception as e:
+            return(f"ERROR: {e}")
+    else:
+        answer = "Please upload an image"
+
+        return(answer)
+
 def tts_response(message, voice, model):
     speech_file_path = Path(__file__).parent / "speech.mp3"
 
@@ -663,6 +712,44 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
                 inputs = [gr.Text(label="Input Prompt"), gr.Text(label="Negative Prompt"), width_slider, height_slider, cfg_slider], 
                 outputs=[gr.Image(type="numpy", label="Output Image")]
             )
+
+        # Text-to-Image Tab
+        with gr.Tab("Image-to-Image"):
+            gr.Markdown(f"<p>{'Create images with Stability.ai API'}</p>")
+
+            bot = gr.Chatbot(render=False)
+
+            with gr.Row():
+
+                image = gr.Image(
+                    label = "Image Input",
+                    type = "pil",
+                    render = False,
+                    height = "512",
+                    width = "512",
+                )
+
+                strength_slider = gr.Slider(
+                    0,1,
+                    label = "Image Strength",
+                    value = 0.35,
+                    step = 0.01,
+                    render = False
+                )
+
+                cfg_slider = gr.Slider(
+                    0,15,
+                    label = "CFG",
+                    value = 7,
+                    render = False
+                )
+
+            chat = gr.Interface(
+                fn = stable_image_to_image_response,
+                inputs = [gr.Text(label="Input Prompt"), gr.Text(label="Negative Prompt"), strength_slider, cfg_slider, image], 
+                outputs=[gr.Image(type="numpy", label="Output Image")]
+            )
+
 
     with gr.Tab("Bing"):
 
