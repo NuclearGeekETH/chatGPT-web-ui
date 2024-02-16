@@ -516,32 +516,32 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
                 outputs=[gr.Text(label="Output Prompt"), gr.Image(type="numpy", label="Output Image")]
             )
 
-            # TTS Tab
-            with gr.Tab("TTS"):
-                gr.Markdown(f"<p>{'Create Text-To-Speech'}</p>")
+        # TTS Tab
+        with gr.Tab("TTS"):
+            gr.Markdown(f"<p>{'Create Text-To-Speech'}</p>")
 
-                bot = gr.Chatbot(render=False)
+            bot = gr.Chatbot(render=False)
 
-                with gr.Row():
-                    voice_dropdown = gr.Dropdown(
-                        ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
-                        label = "Voice",
-                        value = "alloy",
-                        render = False
-                    )
-
-                    model_dropdown = gr.Dropdown(
-                        ["tts-1", "tts-1-hd"],
-                        label = "Model",
-                        value = "tts-1",
-                        render = False
-                    )
-
-                chat = gr.Interface(
-                    fn = tts_response,
-                    inputs = [gr.Text(label="Input Prompt"), voice_dropdown, model_dropdown], 
-                    outputs=[gr.Audio(label="Output Audio")]
+            with gr.Row():
+                voice_dropdown = gr.Dropdown(
+                    ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
+                    label = "Voice",
+                    value = "alloy",
+                    render = False
                 )
+
+                model_dropdown = gr.Dropdown(
+                    ["tts-1", "tts-1-hd"],
+                    label = "Model",
+                    value = "tts-1",
+                    render = False
+                )
+
+            chat = gr.Interface(
+                fn = tts_response,
+                inputs = [gr.Text(label="Input Prompt"), voice_dropdown, model_dropdown], 
+                outputs=[gr.Audio(label="Output Audio")]
+            )
 
 
     with gr.Tab("Google Gemini"):
@@ -602,7 +602,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
             )
 
     with gr.Tab("Misc Search"):
-        
+
         # AnnasChat Tab
         with gr.Tab("AnnasSearch"):
             gr.Markdown(f"<p>{'Use search terms to get journal links'}</p>")
