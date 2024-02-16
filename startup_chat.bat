@@ -1,7 +1,7 @@
 @echo off
 
 If Not Exist "%~dp0%\.venv\Scripts\activate.bat" (
-	py -m venv .venv
+	python -m venv .venv
 	call "%~dp0%\.venv\Scripts\activate"
 	pip install -r requirements.txt
 )
