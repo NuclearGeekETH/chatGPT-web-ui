@@ -501,8 +501,8 @@ def parse_indeed_feed(text, history, location):
     except Exception as ex:
         return F"Something went wrong: {ex}"
 
-with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's ChatGPT") as demo:
-    gr.Markdown(f"<h1 style='text-align: center; display:block'>{'Nuke&apos;s ChatGPT'}</h1>")
+with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
+    gr.Markdown(f"<h1 style='text-align: center; display:block'>{'Nuke&apos;s AI Playground'}</h1>")
 
     with gr.Tab("OpenAI"):
 

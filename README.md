@@ -1,6 +1,6 @@
-# NuclearGeek's ChatGPT
+# NuclearGeek's AI Playground
 
-NuclearGeek's ChatGPT is an interactive chatbot application utilizing OpenAI's GPT Language Models. With a user-friendly Gradio interface, it allows the user to communicate with various OpenAI models, analyze images with Vision, create images with Dall-e-3, or search the web and news articles with Bing. The application supports multiple GPT models and is designed with a set of examples to provide a good starting point for various conversational scenarios. Tabs include Chat, Vision, Dalle, Web Search, and News.
+NuclearGeek's AI Playground is an interactive web application utilizing multiple AI models. With a user-friendly Gradio interface, it allows the user to communicate with various OpenAI, Google Gemini and Stability.ai models including tools to analyze images with Vision, create images with Dall-e-3 or stability, search the web and news articles with Bing, search journal articles using Annas or even look for a new job with Indeed. The application supports multiple GPT and diffusion models and is designed with a set of examples to provide a good starting point for various scenarios. Tabs include OpenAI Chat, OpenAI Vision, Dall-e, Text-to-Speech, Google Gemini Chat, Google Gemini Vision, Stability.ai Text-to-Image, Stability.ai Image-to-Image, Bing Web Search, and Bing News Search.
 
 ## Installation & Setup
 
@@ -31,6 +31,8 @@ cd chatGPT-web-ui
   ```
   OPENAI_API_KEY=your_openai_key
   BING_SEARCH_V7_SUBSCRIPTION_KEY=your_bing_key
+  GOOGLE_API_KEY=your_google_key
+  STABILITY_API_KEY-your_stability_key
   ```
 
 ## Running the Chatbot
