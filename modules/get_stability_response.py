@@ -60,9 +60,53 @@ def stable_text_to_image_response(positive_prompt, negative_prompt, width, heigh
     except Exception as e:
         return(f"ERROR: {e}")
 
+# List of allowed sizes (width, height)
+allowed_sizes = [
+    (1024, 1024), (1152, 896), (1216, 832), (1344, 768),
+    (1536, 640), (640, 1536), (768, 1344), (832, 1216),
+    (896, 1152)
+]
+
+def resize_to_nearest_allowed_size(image):
+    """
+    Resize the image to the nearest allowed size with the same orientation, 
+    maintaining the aspect ratio.
+    """
+    current_size = (image.width, image.height)
+    current_aspect_ratio = current_size[0] / current_size[1]
+    current_orientation = 'portrait' if current_size[0] < current_size[1] else 'landscape'
+    
+    if current_size not in allowed_sizes:
+        # Filter allowed sizes based on the orientation of the original image.
+        allowed_sizes_orientation_filtered = [
+            size for size in allowed_sizes if (
+                ('portrait' if size[0] < size[1] else 'landscape') == current_orientation
+            )
+        ]
+        
+        # Calculate the difference in aspect ratio between current size and each allowed size,
+        # favoring those with the same orientation.
+        size_differences = [(
+            abs(current_aspect_ratio - (size[0] / size[1])),
+            size)
+            for size in allowed_sizes_orientation_filtered]
+        
+        # Sort sizes by their aspect ratio differences and choose the one with the smallest difference.
+        nearest_size = sorted(size_differences, key=lambda x: x[0])[0][1]
+        
+        # Resize the image to the nearest allowed size with the same orientation
+        print(f"Resizing image to nearest allowed size with same orientation: {nearest_size}")
+        image = image.resize(nearest_size, Image.Resampling.LANCZOS)
+    
+    return image
+
 def stable_image_to_image_response(positive_prompt, negative_prompt, strength_slider, cfg, image=None):
     if image:
         try:
+            if int(image.width) * int(image.height) > 5242880:
+                print("Resizing image because it's larger than 5MB")
+                image = resize_to_nearest_allowed_size(image)
+
             buffered = io.BytesIO()
             image.save(buffered, format="PNG")
             buffered.seek(0)
