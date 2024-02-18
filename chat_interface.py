@@ -1,7 +1,7 @@
 import gradio as gr
 from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response
 from modules.get_gemini_response import google_chat_response, google_vision_response
-from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response
+from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response
 from modules.get_azure_response import bing_news, bing_search
 from modules.get_misc_search import annas_response, parse_indeed_feed
 
@@ -187,8 +187,6 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
         with gr.Tab("Text-to-Image"):
             gr.Markdown(f"<p>{'Create images with Stability.ai API'}</p>")
 
-            bot = gr.Chatbot(render=False)
-
             with gr.Row():
                 width_slider = gr.Slider(
                     512,1792,
@@ -221,8 +219,6 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
         with gr.Tab("Image-to-Image"):
             gr.Markdown(f"<p>{'Create images with Stability.ai API'}</p>")
 
-            bot = gr.Chatbot(render=False)
-
             with gr.Row():
 
                 image = gr.Image(
@@ -253,6 +249,29 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 inputs = [gr.Text(label="Input Prompt"), gr.Text(label="Negative Prompt", value="bad, blurry"), strength_slider, cfg_slider, image], 
                 outputs=[gr.Image(type="numpy", label="Output Image")]
             )
+
+        # Text-to-Image Tab
+        with gr.Tab("Upscale-Image"):
+            gr.Markdown(f"<p>{'Upscales images with Stability.ai API'}</p>")
+
+            with gr.Row():
+                with gr.Column(scale=1):
+                    
+                    image = gr.Image(
+                        label = "Image Input",
+                        type = "pil",
+                        render = True,
+                        height = "512",
+                        width = "512",
+                    )
+
+                    btn = gr.Button("Upscale")
+
+                btn.click(
+                    fn = stable_image_upscale_response,
+                    inputs = [image], 
+                    outputs=[gr.Image(type="numpy", label="Output Image")]
+                )
 
     with gr.Tab("Bing"):
 

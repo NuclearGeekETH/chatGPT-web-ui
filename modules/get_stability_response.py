@@ -152,3 +152,48 @@ def stable_image_to_image_response(positive_prompt, negative_prompt, strength_sl
         answer = "Please upload an image"
 
         return(answer)
+
+def stable_image_upscale_response(image=None):
+    if image:
+        try:
+            if int(image.width) * int(image.height) > 5242880:
+                print("Resizing image because it's larger than 5MB")
+                image = resize_to_nearest_allowed_size(image)
+
+            buffered = io.BytesIO()
+            image.save(buffered, format="PNG")
+            buffered.seek(0)
+
+            response = requests.post(
+                f"https://api.stability.ai/v1/generation/esrgan-v1-x2plus/image-to-image/upscale",
+                headers={
+                    "Accept": "application/json",
+                    "Authorization": f"Bearer {stability_key}"
+                },
+                files={
+                    "image": buffered
+                },
+                data={
+                    "height": int(image.height) * 2
+                }
+            )
+
+            if response.status_code != 200:
+                return(f"Non-200 response: {str(response.text)}")
+
+            data = response.json()
+
+            for i, image in enumerate(data["artifacts"]):
+                img_bytes = base64.b64decode(image["base64"])
+                img = Image.open(io.BytesIO(img_bytes))
+                img_array = np.array(img)
+
+                return(img_array)
+                      
+        except Exception as e:
+            return(f"ERROR: {e}")
+    else:
+        answer = "Please upload an image"
+
+        return(answer)
+
