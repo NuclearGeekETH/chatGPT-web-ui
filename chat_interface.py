@@ -252,7 +252,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
 
         # Text-to-Image Tab
         with gr.Tab("Upscale-Image"):
-            gr.Markdown(f"<p>{'Upscales images with Stability.ai API'}</p>")
+            gr.Markdown(f"<p>{'Upscale images with Stability.ai API'}</p>")
 
             with gr.Row():
                 with gr.Column(scale=1):

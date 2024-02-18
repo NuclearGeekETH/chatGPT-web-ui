@@ -11,6 +11,33 @@ genai.configure(api_key=GOOGLE_API_KEY)
 def google_chat_response(message, history):
     model = genai.GenerativeModel('gemini-pro')
 
+    # Set up the model
+    generation_config = {
+    "temperature": 0.9,
+    "top_p": 1,
+    "top_k": 1,
+    "max_output_tokens": 2048,
+    }
+
+    safety_settings = [
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_NONE"
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "BLOCK_NONE"
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_NONE"
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_NONE"
+    },
+    ]
+
     history_response = []
 
     for human, assistant in history:
@@ -22,7 +49,9 @@ def google_chat_response(message, history):
     try:
         response = model.generate_content(
             history_response,
-            stream=True
+            stream=True,
+            generation_config=generation_config,
+            safety_settings=safety_settings
             )
 
         partial_message = ""
