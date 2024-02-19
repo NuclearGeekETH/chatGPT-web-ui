@@ -8,18 +8,7 @@ GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
-def google_chat_response(message, history):
-    model = genai.GenerativeModel('gemini-pro')
-
-    # Set up the model
-    generation_config = {
-    "temperature": 0.9,
-    "top_p": 1,
-    "top_k": 1,
-    "max_output_tokens": 2048,
-    }
-
-    safety_settings = [
+safety_settings = [
     {
         "category": "HARM_CATEGORY_HARASSMENT",
         "threshold": "BLOCK_NONE"
@@ -36,7 +25,17 @@ def google_chat_response(message, history):
         "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
         "threshold": "BLOCK_NONE"
     },
-    ]
+]
+
+def google_chat_response(message, history):
+    model = genai.GenerativeModel('gemini-pro')
+
+    # Set up the model
+    generation_config = {
+    "temperature": 0.9,
+    "top_p": 1,
+    "top_k": 1,
+    }
 
     history_response = []
 
@@ -76,7 +75,10 @@ def google_vision_response(message, history, image=None):
         try:
             model = genai.GenerativeModel('gemini-pro-vision')
             # response = model.generate_content(image)
-            response = model.generate_content([message, image])
+            response = model.generate_content(
+                [message, image],
+                safety_settings=safety_settings
+                )
             response.resolve()
             return response.text
         except Exception as e:
