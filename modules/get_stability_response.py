@@ -3,6 +3,7 @@ import base64
 import numpy as np
 import io
 import os
+import time
 from PIL import Image
 from dotenv import load_dotenv
 
@@ -189,6 +190,104 @@ def stable_image_upscale_response(image=None):
                 img_array = np.array(img)
 
                 return(img_array)
+                      
+        except Exception as e:
+            return(f"ERROR: {e}")
+    else:
+        answer = "Please upload an image"
+
+        return(answer)
+
+# List of allowed sizes (width, height)
+svd_allowed_sizes = [
+    (1024, 576), (576, 1024), (768, 768)
+]
+
+def resize_to_nearest_allowed_size(image):
+    """
+    Resize the image to the nearest allowed size with the same orientation, 
+    maintaining the aspect ratio.
+    """
+    current_size = (image.width, image.height)
+    current_aspect_ratio = current_size[0] / current_size[1]
+    current_orientation = 'portrait' if current_size[0] < current_size[1] else 'landscape'
+    
+    if current_size not in svd_allowed_sizes:
+        # Filter allowed sizes based on the orientation of the original image.
+        allowed_sizes_orientation_filtered = [
+            size for size in svd_allowed_sizes if (
+                ('portrait' if size[0] < size[1] else 'landscape') == current_orientation
+            )
+        ]
+        
+        # Calculate the difference in aspect ratio between current size and each allowed size,
+        # favoring those with the same orientation.
+        size_differences = [(
+            abs(current_aspect_ratio - (size[0] / size[1])),
+            size)
+            for size in allowed_sizes_orientation_filtered]
+        
+        # Sort sizes by their aspect ratio differences and choose the one with the smallest difference.
+        nearest_size = sorted(size_differences, key=lambda x: x[0])[0][1]
+        
+        # Resize the image to the nearest allowed size with the same orientation
+        print(f"Resizing image to nearest allowed size with same orientation: {nearest_size}")
+        image = image.resize(nearest_size, Image.Resampling.LANCZOS)
+    
+    return image
+
+def stable_image_to_video_response(motion, cfg, image=None):
+    if image:
+        try:
+            image = resize_to_nearest_allowed_size(image)
+
+            buffered = io.BytesIO()
+            image.save(buffered, format="PNG")
+            buffered.seek(0)
+
+            response = requests.post(
+                f"https://api.stability.ai/v2alpha/generation/image-to-video",
+                headers={"authorization": f"Bearer {stability_key}"},
+                files={"image": buffered},
+                data={
+                    "seed": 0,
+                    "cfg_scale": cfg,
+                    "motion_bucket_id": motion
+                },
+            )
+
+            if response.status_code != 200:
+                return(f"Non-200 response: {str(response.text)}")
+
+            data = response.json()
+
+            generation_id = data["id"]
+
+
+            video_complete = False
+
+            while video_complete == False:
+                response = requests.request(
+                    "GET",
+                    f"https://api.stability.ai/v2alpha/generation/image-to-video/result/{generation_id}",
+                    headers={
+                        'Accept': "video/*",  # Use 'application/json' to receive base64 encoded JSON
+                        'authorization': f"Bearer {stability_key}"
+                    },
+                )
+
+                if response.status_code == 202:
+                    print("Generation in-progress, try again in 10 seconds.")
+                    time.sleep(10)
+                elif response.status_code == 200:
+                    print("Generation complete!")
+                    video_complete = True
+                    with open("video.mp4", 'wb') as file:
+                        file.write(response.content)
+
+                    return 'video.mp4'
+                else:
+                    raise Exception(str(response.json()))
                       
         except Exception as e:
             return(f"ERROR: {e}")

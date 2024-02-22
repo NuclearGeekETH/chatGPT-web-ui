@@ -1,7 +1,7 @@
 import gradio as gr
 from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response
 from modules.get_gemini_response import google_chat_response, google_vision_response
-from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response
+from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response
 from modules.get_azure_response import bing_news, bing_search
 from modules.get_misc_search import annas_response, parse_indeed_feed
 
@@ -273,6 +273,43 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                     outputs=[gr.Image(type="numpy", label="Output Image")]
                 )
 
+        # Image-to-Video Tab
+        with gr.Tab("Image-to-Video"):
+            gr.Markdown(f"<p>{'Create videos with Stability.ai API'}</p>")
+
+            with gr.Row():
+
+                image = gr.Image(
+                    label = "Image Input",
+                    type = "pil",
+                    render = False,
+                    height = "512",
+                    width = "512",
+                )
+
+                motion_slider = gr.Slider(
+                    1,255,
+                    label = "Motion Bucket ID",
+                    value = 127,
+                    step = 1,
+                    render = False
+                )
+
+                cfg_slider = gr.Slider(
+                    0,10,
+                    label = "CFG",
+                    value = 1.8,
+                    step = 0.1,
+                    render = False
+                )
+
+            chat = gr.Interface(
+                fn = stable_image_to_video_response,
+                inputs = [motion_slider, cfg_slider, image], 
+                outputs=[gr.Video(label="Output Video")]
+            )
+
+
     with gr.Tab("Bing"):
 
         # WebChat Tab
@@ -356,7 +393,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
 if __name__ == "__main__":
     demo.queue()
     # # Toggle this on if you want to share your app, change the username and password
-    # demo.launch(server_port=7862, share=True, auth=("admin", "password"))
+    # demo.launch(server_port=7862, share=True, auth=("nuke", "Nuclear0224!"))
 
     # Toggle this on if you want to only run local
-    demo.launch(server_port=7862)
+    demo.launch()
