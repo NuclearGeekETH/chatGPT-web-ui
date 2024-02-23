@@ -395,7 +395,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
 
         # Image-to-Video Tab
         with gr.Tab("ImageResizer"):
-            gr.Markdown(f"<p>{'Resize an Image'}</p>")
+            gr.Markdown(f"<p>{'Resize an Image, works well if you need to downscale an image'}</p>")
 
             with gr.Row():
 
