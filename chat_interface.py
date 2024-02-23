@@ -70,9 +70,8 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
         # Vision Tab
         with gr.Tab("Vision"):
             gr.Markdown(f"<p>{'Ask questions about an image'}</p>")
+            bot = gr.Chatbot(render=False)
             with gr.Row():
-                bot = gr.Chatbot(render=False)
-
                 image = gr.Image(
                     label = "Image Input",
                     type = "pil",
@@ -81,11 +80,13 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                     width = "512"
                 )
 
-                chat = gr.ChatInterface(
-                    fn = vision_response,
-                    chatbot = bot,
-                    additional_inputs = [image]
-                )
+                with gr.Column(scale=1):
+
+                    chat = gr.ChatInterface(
+                        fn = vision_response,
+                        chatbot = bot,
+                        additional_inputs = [image]
+                    )
 
         # Dalle Tab
         with gr.Tab("Dall-e"):
