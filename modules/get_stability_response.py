@@ -61,6 +61,14 @@ def stable_text_to_image_response(positive_prompt, negative_prompt, width, heigh
     except Exception as e:
         return(f"ERROR: {e}")
 
+def resize_image(height, width, image):
+    """
+    Resize the image to custom size
+    """
+    image = image.resize((height, width), Image.Resampling.LANCZOS)
+    
+    return image
+
 # List of allowed sizes (width, height)
 allowed_sizes = [
     (1024, 1024), (1152, 896), (1216, 832), (1344, 768),

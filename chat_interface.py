@@ -1,7 +1,7 @@
 import gradio as gr
 from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response
 from modules.get_gemini_response import google_chat_response, google_vision_response
-from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response
+from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response, resize_image
 from modules.get_azure_response import bing_news, bing_search
 from modules.get_misc_search import annas_response, parse_indeed_feed
 
@@ -177,7 +177,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 )
 
                 with gr.Column(scale=1):
-                    
+
                     chat = gr.ChatInterface(
                         fn = google_vision_response,
                         chatbot = bot,
@@ -337,7 +337,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 chatbot = bot,
             )
 
-    with gr.Tab("Misc Search"):
+    with gr.Tab("Misc Tools"):
 
         # AnnasChat Tab
         with gr.Tab("AnnasSearch"):
@@ -392,6 +392,44 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 chatbot = bot,
                 additional_inputs = [location_dropdown]
             )
+
+        # Image-to-Video Tab
+        with gr.Tab("ImageResizer"):
+            gr.Markdown(f"<p>{'Resize an Image'}</p>")
+
+            with gr.Row():
+
+                image = gr.Image(
+                    label = "Image Input",
+                    type = "pil",
+                    render = False,
+                    height = "512",
+                    width = "512",
+                )
+
+                height_slider = gr.Slider(
+                    1,2048,
+                    label = "Height",
+                    value = 512,
+                    step = 1,
+                    render = False
+                )
+
+                width_slider = gr.Slider(                    
+                    1,2048,
+                    label = "Width",
+                    value = 512,
+                    step = 1,
+                    render = False
+                )
+
+            chat = gr.Interface(
+                fn = resize_image,
+                inputs = [height_slider, width_slider, image], 
+                outputs=[gr.Image(type="numpy", label="Output Image")]
+            )
+
+
 
 if __name__ == "__main__":
     demo.queue()
