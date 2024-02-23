@@ -410,7 +410,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 height_slider = gr.Slider(
                     1,2048,
                     label = "Height",
-                    value = 512,
+                    value = 1024,
                     step = 1,
                     render = False
                 )
@@ -418,7 +418,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 width_slider = gr.Slider(                    
                     1,2048,
                     label = "Width",
-                    value = 512,
+                    value = 1024,
                     step = 1,
                     render = False
                 )
