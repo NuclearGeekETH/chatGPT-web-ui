@@ -176,11 +176,13 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                     width = "512"
                 )
 
-                chat = gr.ChatInterface(
-                    fn = google_vision_response,
-                    chatbot = bot,
-                    additional_inputs = [image]
-                )
+                with gr.Column(scale=1):
+                    
+                    chat = gr.ChatInterface(
+                        fn = google_vision_response,
+                        chatbot = bot,
+                        additional_inputs = [image]
+                    )
 
     with gr.Tab("Stability AI"):
 
