@@ -11,9 +11,9 @@ load_dotenv()
 
 stability_key = os.getenv('STABILITY_API_KEY')
 
-def stable_text_to_image_response(positive_prompt, negative_prompt, width, height, cfg):
+def stable_text_to_image_response(positive_prompt, negative_prompt, model, width, height, cfg):
     try:
-        url = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image"
+        url = f"https://api.stability.ai/v1/generation/{model}/text-to-image"
 
         body = {
         "steps": 40,

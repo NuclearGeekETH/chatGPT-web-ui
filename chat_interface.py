@@ -191,6 +191,14 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             gr.Markdown(f"<p>{'Create images with Stability.ai API'}</p>")
 
             with gr.Row():
+
+                model_dropdown = gr.Dropdown(
+                    ["stable-diffusion-xl-1024-v0-9", "stable-diffusion-xl-1024-v1-0", "stable-diffusion-v1-6", "stable-diffusion-512-v2-1", "stable-diffusion-xl-beta-v2-2-2"],
+                    label = "Model",
+                    value = "stable-diffusion-xl-1024-v1-0",
+                    render = False
+                )
+
                 width_slider = gr.Slider(
                     512,1792,
                     label = "Width",
@@ -214,7 +222,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
 
             chat = gr.Interface(
                 fn = stable_text_to_image_response,
-                inputs = [gr.Text(label="Input Prompt"), gr.Text(label="Negative Prompt", value="bad, blurry"), width_slider, height_slider, cfg_slider], 
+                inputs = [gr.Text(label="Input Prompt"), gr.Text(label="Negative Prompt", value="bad, blurry"), model_dropdown, width_slider, height_slider, cfg_slider], 
                 outputs=[gr.Image(type="numpy", label="Output Image")]
             )
 
