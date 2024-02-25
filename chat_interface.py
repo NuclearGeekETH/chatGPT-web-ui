@@ -3,7 +3,7 @@ from modules.get_openai_response import chat_response, dalle_response, tts_respo
 from modules.get_gemini_response import google_chat_response, google_vision_response
 from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response, resize_image
 from modules.get_azure_response import bing_news, bing_search
-from modules.get_misc_search import annas_response, parse_indeed_feed
+from modules.get_misc_tools import annas_response, parse_indeed_feed, edit_image
 
 with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
     gr.Markdown(f"<h1 style='text-align: center; display:block'>{'Nuke&apos;s AI Playground'}</h1>")
@@ -320,7 +320,6 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 outputs=[gr.Video(label="Output Video")]
             )
 
-
     with gr.Tab("Bing"):
 
         # WebChat Tab
@@ -437,7 +436,21 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 outputs=[gr.Image(type="numpy", label="Output Image")]
             )
 
+        # Image Editor
+        with gr.Tab("ImageEditor"):
+            im = gr.ImageEditor(
+                type="pil"
+            )
 
+            with gr.Group():
+                with gr.Row():
+                    text_out = gr.Textbox(label="Edited Size")
+                with gr.Row():
+                    im_out_1 = gr.Image(type="pil", label="Background")
+                    im_out_2 = gr.Image(type="pil", label="Layer 0")
+                    im_out_3 = gr.Image(type="pil", label="Composite")
+
+            im.change(edit_image, outputs=[text_out, im_out_1, im_out_2, im_out_3], inputs=im)
 
 if __name__ == "__main__":
     demo.queue()

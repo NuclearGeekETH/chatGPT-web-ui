@@ -83,3 +83,6 @@ def parse_indeed_feed(text, history, location):
     except Exception as ex:
         return F"Something went wrong: {ex}"
 
+def edit_image(im):
+    return [im["background"].size, im["background"], im["layers"][0], im["composite"]]
+
