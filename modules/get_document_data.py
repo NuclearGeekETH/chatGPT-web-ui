@@ -16,10 +16,13 @@ def load_document_into_memory(file_path):
         if file_path.endswith('.xls') or file_path.endswith('.xlsx'):
             # Load the Excel file into a pandas DataFrame
             df = pd.read_excel(file_path, engine='openpyxl')
-            
-            # Returning the DataFrame
             return df
         
+        if file_path.endswith('.csv'):
+            # Load the CSV file into a pandas DataFrame
+            df = pd.read_csv(file_path)
+            return df
+
         if file_path.endswith('.pdf'):
             text_content = ""
             # Open the PDF file
