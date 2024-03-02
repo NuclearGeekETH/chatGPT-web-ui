@@ -1,5 +1,5 @@
 import gradio as gr
-from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response
+from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response, chat_document_response
 from modules.get_gemini_response import google_chat_response, google_vision_response
 from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response, resize_image
 from modules.get_azure_response import bing_news, bing_search
@@ -66,6 +66,38 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 inputs = system,
                 label = "System Message Examples"
             )
+
+        # ChatGPT Tab
+        with gr.Tab("DocumentChat"):
+            gr.Markdown(f"<p>{'Use ChatGPT with optional parameters below to chat about data'}</p>")
+
+            bot = gr.Chatbot(render=False)
+
+            document = gr.File(
+                label = "Your document",
+                render = True
+            )
+
+            dropdown = gr.Dropdown(
+                ["gpt-4-0125-preview", "gpt-4-turbo-preview", "gpt-4-1106-preview", "gpt-4", "gpt-3.5-turbo-1106", "gpt-3.5-turbo"],
+                label = "Model",
+                value = "gpt-4-0125-preview",
+                render = False
+            )
+
+            system = gr.Textbox(
+                lines = 2,
+                label = "System Message",
+                value = f"You are ChatGPT, a large language model trained by OpenAI based on the GPT-4 architecture.",
+                render = False
+                )
+
+            chat = gr.ChatInterface(
+                fn = chat_document_response,
+                chatbot = bot,
+                additional_inputs = [document, dropdown, system]
+            )
+
 
         # Vision Tab
         with gr.Tab("Vision"):

@@ -6,4 +6,8 @@ numpy
 beautifulsoup4
 feedparser
 google-generativeai
-
+pandas 
+openpyxl
+xlrd
+pymupdf
+python-docx

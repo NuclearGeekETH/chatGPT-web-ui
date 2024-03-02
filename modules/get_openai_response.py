@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from datetime import date
 from PIL import Image
 from pathlib import Path
+from .get_document_data import load_document_into_memory
 
 load_dotenv()
 
@@ -41,15 +42,43 @@ def chat_response(message, history, model, system):
                 if partial_message:
                     yield partial_message
 
-    except openai.APIError as e:
+    except Exception as e:
         #Handle API error here, e.g. retry or log
         return(f"OpenAI API returned an API Error: {e}")
-    except openai.APIConnectionError as e:
-        #Handle connection error here
-        return(f"Failed to connect to OpenAI API: {e}")
-    except openai.RateLimitError as e:
-        #Handle rate limit error (we recommend using exponential backoff)
-        return(f"OpenAI API request exceeded rate limit: {e}")
+
+def chat_document_response(message, history, document, model, system):
+    document_data = load_document_into_memory(document)
+
+    history_response = []
+
+    history_response.append({"role": "system", "content": f"{system} Current Date: {date.today()}, Document Data: {document_data}"})
+
+    for human, assistant in history:
+        history_response.append({"role": "user", "content": human})
+        history_response.append({"role": "assistant", "content": assistant})
+
+    history_response.append({"role": "user", "content": message})
+
+    try:
+        completion = openai.chat.completions.create(
+            model = model,
+            messages = history_response,
+            stream=True
+        )
+
+        # Stream Response
+        partial_message = ""
+        for chunk in completion:
+            if chunk.choices[0].delta.content != None:
+                partial_message = partial_message + str(chunk.choices[0].delta.content)
+                if partial_message:
+                    yield partial_message
+
+    except Exception as e:
+        #Handle API error here, e.g. retry or log
+        return(f"OpenAI API returned an API Error: {e}")
+
+
 
 def dalle_response(message, size, quality, style):
     try:
