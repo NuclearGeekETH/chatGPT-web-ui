@@ -1,6 +1,8 @@
 import fitz  # PyMuPDF
-from docx import Document
+import requests
 import pandas as pd
+from docx import Document
+from bs4 import BeautifulSoup
 
 def load_document_into_memory(file_path):
     """
@@ -42,6 +44,23 @@ def load_document_into_memory(file_path):
         else:
             return "Unsupported file type or handling not implemented."
         
+    except Exception as e:
+        # Handling potential errors, such as file not found or wrong format
+        return f"An error occurred: {e}"
+    
+def get_website_data(url):
+    try:
+        content = requests.get(url)
+
+        # Extract text content using Beautiful Soup
+        soup = BeautifulSoup(content.content, 'html.parser')
+        paragraphs = soup.find_all('p')
+        content = ' '.join([p.get_text() for p in paragraphs])
+
+        print(content)
+
+        return content
+    
     except Exception as e:
         # Handling potential errors, such as file not found or wrong format
         return f"An error occurred: {e}"
