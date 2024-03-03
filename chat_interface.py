@@ -1,5 +1,5 @@
 import gradio as gr
-from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response, chat_document_response, chat_website_response
+from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response, chat_document_response
 from modules.get_gemini_response import google_chat_response, google_vision_response
 from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response, resize_image
 from modules.get_azure_response import bing_news, bing_search
@@ -124,12 +124,10 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 )
 
             chat = gr.ChatInterface(
-                fn = chat_website_response,
+                fn = chat_document_response,
                 chatbot = bot,
                 additional_inputs = [link, dropdown, system]
             )
-
-
 
         # Vision Tab
         with gr.Tab("Vision"):

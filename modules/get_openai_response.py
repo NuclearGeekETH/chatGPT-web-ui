@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from datetime import date
 from PIL import Image
 from pathlib import Path
+from urllib.parse import urlparse
 from .get_document_data import load_document_into_memory, get_website_data
 
 load_dotenv()
@@ -46,8 +47,15 @@ def chat_response(message, history, model, system):
         #Handle API error here, e.g. retry or log
         return(f"OpenAI API returned an API Error: {e}")
 
+def is_url(s):
+    result = urlparse(s)
+    return all([result.scheme, result.netloc])
+
 def chat_document_response(message, history, document, model, system):
-    document_data = load_document_into_memory(document)
+    if is_url(document):
+        document_data = get_website_data(document)
+    else:
+        document_data = load_document_into_memory(document)
 
     history_response = []
 
@@ -77,43 +85,6 @@ def chat_document_response(message, history, document, model, system):
     except Exception as e:
         #Handle API error here, e.g. retry or log
         return(f"OpenAI API returned an API Error: {e}")
-
-def chat_website_response(message, history, url, model, system):
-    website_data = get_website_data(url)
-
-    if website_data:
-
-        history_response = []
-
-        history_response.append({"role": "system", "content": f"{system} Current Date: {date.today()}, Website Data: {website_data}"})
-
-        for human, assistant in history:
-            history_response.append({"role": "user", "content": human})
-            history_response.append({"role": "assistant", "content": assistant})
-
-        history_response.append({"role": "user", "content": message})
-
-        try:
-            completion = openai.chat.completions.create(
-                model = model,
-                messages = history_response,
-                stream=True
-            )
-
-            # Stream Response
-            partial_message = ""
-            for chunk in completion:
-                if chunk.choices[0].delta.content != None:
-                    partial_message = partial_message + str(chunk.choices[0].delta.content)
-                    if partial_message:
-                        yield partial_message
-
-        except Exception as e:
-            #Handle API error here, e.g. retry or log
-            return(f"OpenAI API returned an API Error: {e}")
-    
-    else:
-        return "No website data"
 
 def dalle_response(message, size, quality, style):
     try:
@@ -153,15 +124,9 @@ def tts_response(message, voice, model):
 
         return(speech_file_path)
     
-    except openai.APIError as e:
+    except Exception as e:
         #Handle API error here, e.g. retry or log
         return(f"OpenAI API returned an API Error: {e}")
-    except openai.APIConnectionError as e:
-        #Handle connection error here
-        return(f"Failed to connect to OpenAI API: {e}")
-    except openai.RateLimitError as e:
-        #Handle rate limit error (we recommend using exponential backoff)
-        return(f"OpenAI API request exceeded rate limit: {e}")
 
 def encode_image_to_base64(image):
     buffered = io.BytesIO()

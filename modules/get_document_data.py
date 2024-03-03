@@ -5,15 +5,6 @@ from docx import Document
 from bs4 import BeautifulSoup
 
 def load_document_into_memory(file_path):
-    """
-    Loads an Excel file into memory using pandas.
-
-    Parameters:
-    file_path (str): The path to the Excel file to be loaded.
-
-    Returns:
-    pandas.DataFrame: A DataFrame containing the contents of the Excel file.
-    """
     try:
         if file_path.endswith('.xls') or file_path.endswith('.xlsx'):
             # Load the Excel file into a pandas DataFrame
@@ -56,8 +47,6 @@ def get_website_data(url):
         soup = BeautifulSoup(content.content, 'html.parser')
         paragraphs = soup.find_all('p')
         content = ' '.join([p.get_text() for p in paragraphs])
-
-        print(content)
 
         return content
     
