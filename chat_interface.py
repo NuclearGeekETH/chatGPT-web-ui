@@ -498,21 +498,21 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 outputs=[gr.Image(type="numpy", label="Output Image")]
             )
 
-        # Image Editor
-        with gr.Tab("ImageEditor"):
-            im = gr.ImageEditor(
-                type="pil"
-            )
+        # # Image Editor
+        # with gr.Tab("ImageEditor"):
+        #     im = gr.ImageEditor(
+        #         type="pil"
+        #     )
 
-            with gr.Group():
-                with gr.Row():
-                    text_out = gr.Textbox(label="Edited Size")
-                with gr.Row():
-                    im_out_1 = gr.Image(type="pil", label="Background")
-                    im_out_2 = gr.Image(type="pil", label="Layer 0")
-                    im_out_3 = gr.Image(type="pil", label="Composite")
+        #     with gr.Group():
+        #         with gr.Row():
+        #             text_out = gr.Textbox(label="Edited Size")
+        #         with gr.Row():
+        #             im_out_1 = gr.Image(type="pil", label="Background")
+        #             im_out_2 = gr.Image(type="pil", label="Layer 0")
+        #             im_out_3 = gr.Image(type="pil", label="Composite")
 
-            im.change(edit_image, outputs=[text_out, im_out_1, im_out_2, im_out_3], inputs=im)
+        #     im.change(edit_image, outputs=[text_out, im_out_1, im_out_2, im_out_3], inputs=im)
 
 if __name__ == "__main__":
     demo.queue()
