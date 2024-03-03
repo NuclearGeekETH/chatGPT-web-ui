@@ -499,7 +499,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             )
 
         # # Disabled due to high CPU usage with gr.ImageEditor, toggle on when you need it
-        # # Image Editor # Disabled due to high CPU usage with gr.ImageEditor, toggle on when you need it
+        # # Image Editor
         # with gr.Tab("ImageEditor"):
         #     im = gr.ImageEditor(
         #         type="pil"
