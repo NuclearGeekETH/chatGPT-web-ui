@@ -86,6 +86,43 @@ def chat_document_response(message, history, document, model, system):
         #Handle API error here, e.g. retry or log
         return(f"OpenAI API returned an API Error: {e}")
 
+def chat_job_response(message, history, document, link, model, system):
+    try:
+        website_data = get_website_data(link)
+        document_data = load_document_into_memory(document)
+    except Exception as e:
+        return f"Error"
+
+    history_response = []
+
+    history_response.append({"role": "system", "content": f"{system} Current Date: {date.today()}. The resume is: {document_data}. The job posting is: {website_data}"})
+
+    for human, assistant in history:
+        history_response.append({"role": "user", "content": human})
+        history_response.append({"role": "assistant", "content": assistant})
+
+    history_response.append({"role": "user", "content": message})
+
+    try:
+        completion = openai.chat.completions.create(
+            model = model,
+            messages = history_response,
+            stream=True
+        )
+
+        # Stream Response
+        partial_message = ""
+        for chunk in completion:
+            if chunk.choices[0].delta.content != None:
+                partial_message = partial_message + str(chunk.choices[0].delta.content)
+                if partial_message:
+                    yield partial_message
+
+    except Exception as e:
+        #Handle API error here, e.g. retry or log
+        return(f"OpenAI API returned an API Error: {e}")
+
+
 def dalle_response(message, size, quality, style):
     try:
         response = openai.images.generate(

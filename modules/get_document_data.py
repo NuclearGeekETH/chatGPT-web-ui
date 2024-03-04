@@ -41,15 +41,28 @@ def load_document_into_memory(file_path):
     
 def get_website_data(url):
     try:
-        content = requests.get(url)
+        # Send a HTTP request to the provided URL
+        response = requests.get(url)
+        response.raise_for_status()  # This will raise an HTTPError if the request returned an unsuccessful status code.
 
         # Extract text content using Beautiful Soup
-        soup = BeautifulSoup(content.content, 'html.parser')
-        paragraphs = soup.find_all('p')
-        content = ' '.join([p.get_text() for p in paragraphs])
+        soup = BeautifulSoup(response.content, 'html.parser')
 
-        return content
+        # Removing script and style elements
+        for script_or_style in soup(["script", "style"]):
+            script_or_style.decompose()
+
+        # Get text and handle whitespace
+        text = soup.get_text()
+        lines = (line.strip() for line in text.splitlines())
+        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+        text = '\n'.join(chunk for chunk in chunks if chunk)
+
+        return text
     
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP Error occurred: {e}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error during requests to {url}: {e}")
     except Exception as e:
-        # Handling potential errors, such as file not found or wrong format
-        return f"An error occurred: {e}"
+        print(f"Some other error occurred: {e}")
