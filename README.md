@@ -32,7 +32,8 @@ cd chatGPT-web-ui
   OPENAI_API_KEY=your_openai_key
   BING_SEARCH_V7_SUBSCRIPTION_KEY=your_bing_key
   GOOGLE_API_KEY=your_google_key
-  STABILITY_API_KEY-your_stability_key
+  STABILITY_API_KEY=your_stability_key
+  ANTHROPIC_API_KEY=your_anthropic_key
   ```
 
 ## Links to get API Keys:
@@ -44,6 +45,8 @@ cd chatGPT-web-ui
   - [Google AI Studio](https://aistudio.google.com/app/apikey)
 
   - [Stability.ai](https://platform.stability.ai/)
+
+  - [Anthropic](https://www.anthropic.com/api)
 
 ## Running the Chatbot
 

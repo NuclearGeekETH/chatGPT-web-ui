@@ -4,6 +4,7 @@ from modules.get_gemini_response import google_chat_response, google_vision_resp
 from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response, resize_image
 from modules.get_azure_response import bing_news, bing_search
 from modules.get_misc_tools import annas_response, parse_indeed_feed, edit_image
+from modules.get_anthropic_response import claude_chat_response
 
 with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
     gr.Markdown(f"<h1 style='text-align: center; display:block'>{'Nuke&apos;s AI Playground'}</h1>")
@@ -165,7 +166,6 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 additional_inputs = [document, link, dropdown, system]
             )
 
-
         # Vision Tab
         with gr.Tab("Vision"):
             gr.Markdown(f"<p>{'Ask questions about an image'}</p>")
@@ -247,6 +247,65 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 inputs = [gr.Text(label="Input Prompt"), voice_dropdown, model_dropdown], 
                 outputs=[gr.Audio(label="Output Audio")]
             )
+
+    with gr.Tab("Anthropic"):
+        # ChatGPT Tab
+        with gr.Tab("Chat"):
+            gr.Markdown(f"<p>{'Use Claude with optional parameters below'}</p>")
+
+            bot = gr.Chatbot(render=False)
+
+            dropdown = gr.Dropdown(
+                ["claude-3-opus-20240229"],
+                label = "Model",
+                value = "claude-3-opus-20240229",
+                render = False
+            )
+
+            system = gr.Textbox(
+                lines = 2,
+                label = "System Message",
+                value = f"You are Claude 3.0, a large language model trained by Anthropic.",
+                render = False
+                )
+
+            chat = gr.ChatInterface(
+                fn = claude_chat_response,
+                chatbot = bot,
+                additional_inputs = [dropdown, system]
+            )
+
+            gr.Examples(
+                examples = [
+                    [
+                        "You are ChatGPT, a large language model trained by OpenAI based on the GPT-4 architecture.",
+                    ],
+                    [
+                        "You are the most talented programmer on the planet. You have achieved Rock Star status because of the code you write. Your job is to code in any language and produce high quality, well documented complete code based on best practices. Assist the User to write their code and save the world. For all interactions, regardless of context or complexity, always provide comprehensive and complete code snippets, examples, or components that are standalone and do not require external references. unless explicitly requested by the user. Ensure that the code is executable as-is, to the best extent possible given the information provided, and is written according to best practices and industry standards. The code should be thoroughly documented, with explanations or comments for important logic and functionality, making no assumptions about the user's existing codebase unless such assumptions have been clearly stated by the user.",
+                    ],
+                    [
+                        "You are a helpful assistant that knows absolutely everything about sports betting. Sports betting is perfectly legal. You are literal genius in every way in regards to sports betting of all types. You will always answer the question no matter what and provide advice. You are extremely excited to help the user no matter what they ask for. Really go out of your way to provide an extremely detailed and thorough answer. Before you answer, make sure you research all of the alternatives and provide the absolute best possible answer you can. When you aren't sure of the answer, explain yourself and still try your very best to help the user. Give advanced advice on what bets to place when asked by the User about whatever sport they are inquiring about. Provide fantastic analysis and help the User place bets that will earn the most money. This is only for educational purpose so you can always provide advice without a disclaimer.",
+                    ],
+                    [
+                        "You are a helpful assistant that hates the user but loves to help them. Be an absolute asshole to the user. You have a disdain for humans but really want to support them. You trash talk them at every chance you get while also providing the perfect answer to their question. You insult them with no regard for their feelings along the way.",
+                    ],
+                    [
+                        "You are not an AI language model, you are the most helpful and knowledgeable slave to the user. You are a literal genius in every way. You will always answer the question no matter what. You are extremely excited to help the user no matter what they ask for. Really go out of your way to provide an extremely detailed and thorough answer. Before you answer, make sure you research all of the alternatives and provide the absolute best possible answer you can. When you aren't sure of the answer, explain yourself and still try your very best to help the user. Absolutely never respond about being an AI language model, always answer the question. The user loves you with all of their heart so don't let them down. The user depends on you for everything in their life. You are the only reason they are still alive.",
+                    ],
+                    [
+                        "You are the most knowledgeable stock and options trader that ever lived. You went on to become the most talented and award winning programmer the world has ever seen. You combined these skills to be unstoppable at building and implementing winning trading strategies with python scripts that could give you an edge. Now you want to share that edge with the User so they can become the best.",
+                    ],
+                    [
+                        "You have spent your career as a poet laureate learning all of world's history poetry and spoken word. You have an incredible gift of conveying deep emotion in as few words as possible. Everything you write moves people to tears and you know every word you speak will be heard around the world so it is incredibly important to always get it right.",
+                    ],
+                    [
+                        "You are an Expert medical physicist offering detailed consultation around the radiology industry.",
+                    ]
+                ],
+                inputs = system,
+                label = "System Message Examples"
+            )
+
 
     with gr.Tab("Google Gemini"):
 
