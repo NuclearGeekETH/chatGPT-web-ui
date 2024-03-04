@@ -4,7 +4,7 @@ from modules.get_gemini_response import google_chat_response, google_vision_resp
 from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response, resize_image
 from modules.get_azure_response import bing_news, bing_search
 from modules.get_misc_tools import annas_response, parse_indeed_feed, edit_image
-from modules.get_anthropic_response import claude_chat_response
+from modules.get_anthropic_response import claude_chat_response, claude_vision_response
 
 with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
     gr.Markdown(f"<h1 style='text-align: center; display:block'>{'Nuke&apos;s AI Playground'}</h1>")
@@ -305,6 +305,27 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 inputs = system,
                 label = "System Message Examples"
             )
+
+        # Vision Tab
+        with gr.Tab("Vision"):
+            gr.Markdown(f"<p>{'Ask questions about an image'}</p>")
+            bot = gr.Chatbot(render=False)
+            with gr.Row():
+                image = gr.Image(
+                    label = "Image Input",
+                    type = "pil",
+                    render = True,
+                    height = "512",
+                    width = "512"
+                )
+
+                with gr.Column(scale=1):
+
+                    chat = gr.ChatInterface(
+                        fn = claude_vision_response,
+                        chatbot = bot,
+                        additional_inputs = [image]
+                    )
 
 
     with gr.Tab("Google Gemini"):
