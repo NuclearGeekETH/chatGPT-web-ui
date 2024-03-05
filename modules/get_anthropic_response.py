@@ -78,8 +78,6 @@ def claude_vision_response(message, history, image=None):
                 model="claude-3-opus-20240229",
             )
 
-            print(message)
-
             return message.content[0].text
 
         except Exception as e:
