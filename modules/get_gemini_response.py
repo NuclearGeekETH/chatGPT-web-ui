@@ -27,8 +27,8 @@ safety_settings = [
     },
 ]
 
-def google_chat_response(message, history):
-    model = genai.GenerativeModel('gemini-pro')
+def google_chat_response(message, history, model):
+    model = genai.GenerativeModel(model)
 
     # Set up the model
     generation_config = {

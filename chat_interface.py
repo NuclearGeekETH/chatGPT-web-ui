@@ -248,8 +248,9 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 outputs=[gr.Audio(label="Output Audio")]
             )
 
+    # Anthropic Claude Tab
     with gr.Tab("Anthropic"):
-        # ChatGPT Tab
+        # Claude Chat Tab
         with gr.Tab("Chat"):
             gr.Markdown(f"<p>{'Use Claude with optional parameters below'}</p>")
 
@@ -327,7 +328,6 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                         additional_inputs = [image]
                     )
 
-
     with gr.Tab("Google Gemini"):
 
         # GoogleGemini Tab
@@ -336,9 +336,17 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
 
             bot = gr.Chatbot(render=False)
 
+            dropdown = gr.Dropdown(
+                ["gemini-pro"],
+                label = "Google Gemini Model",
+                value = "gemini-pro",
+                render = False
+            )
+
             chat = gr.ChatInterface(
                 fn = google_chat_response,
                 chatbot = bot,
+                additional_inputs = [dropdown]
             )
 
         # GoogleVision Tab
