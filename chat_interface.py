@@ -5,6 +5,7 @@ from modules.get_stability_response import stable_text_to_image_response, stable
 from modules.get_azure_response import bing_news, bing_search
 from modules.get_misc_tools import annas_response, parse_indeed_feed, edit_image
 from modules.get_anthropic_response import claude_chat_response, claude_vision_response
+from utility_scripts.get_stability_models import stability_models
 
 with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
     gr.Markdown(f"<h1 style='text-align: center; display:block'>{'Nuke&apos;s AI Playground'}</h1>")
@@ -337,9 +338,9 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             bot = gr.Chatbot(render=False)
 
             dropdown = gr.Dropdown(
-                ["gemini-pro"],
+                ["gemini-pro", "gemini-1.5-pro-latest", "gemini-1.0-pro"],
                 label = "Google Gemini Model",
-                value = "gemini-pro",
+                value = "gemini-1.0-pro",
                 render = False
             )
 
@@ -380,7 +381,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             with gr.Row():
 
                 model_dropdown = gr.Dropdown(
-                    ["stable-diffusion-xl-1024-v0-9", "stable-diffusion-xl-1024-v1-0", "stable-diffusion-v1-6", "stable-diffusion-512-v2-1", "stable-diffusion-xl-beta-v2-2-2"],
+                    stability_models,
                     label = "Model",
                     value = "stable-diffusion-xl-1024-v1-0",
                     render = False

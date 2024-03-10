@@ -12,3 +12,4 @@ xlrd
 pymupdf
 python-docx
 anthropic
+pydicom
