@@ -5,6 +5,7 @@ from modules.get_stability_response import stable_text_to_image_response, stable
 from modules.get_azure_response import bing_news, bing_search
 from modules.get_misc_tools import annas_response, parse_indeed_feed, edit_image
 from modules.get_anthropic_response import claude_chat_response, claude_vision_response
+from modules.get_ollama_response import ollama_chat_response, ollama_vision_response
 from utility_scripts.get_stability_models import stability_models
 
 with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
@@ -248,6 +249,55 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 inputs = [gr.Text(label="Input Prompt"), voice_dropdown, model_dropdown], 
                 outputs=[gr.Audio(label="Output Audio")]
             )
+
+    with gr.Tab("Ollama"):
+        # Ollama Chat Tab
+        with gr.Tab("Chat"):
+            gr.Markdown(f"<p>{'Use Ollama with optional parameters below'}</p>")
+
+            bot = gr.Chatbot(render=False)
+
+            dropdown = gr.Dropdown(
+                ["llama2", "codellama", "llama2-uncensored", "gemma", "mistral", "dolphin-mistral", "mixtral", "dolphin-mixtral", "neural-chat", "deepseek-coder"],
+                label = "Model",
+                value = "llama2",
+                render = False
+            )
+
+            chat = gr.ChatInterface(
+                fn = ollama_chat_response,
+                chatbot = bot,
+                additional_inputs = [dropdown]
+            )
+
+        # Ollama Vision Tab
+        with gr.Tab("Vision"):
+            gr.Markdown(f"<p>{'Ask questions about an image'}</p>")
+            bot = gr.Chatbot(render=False)
+            with gr.Row():
+                image = gr.Image(
+                    label = "Image Input",
+                    type = "pil",
+                    render = True,
+                    height = "512",
+                    width = "512"
+                )
+
+                dropdown = gr.Dropdown(
+                    ["llava"],
+                    label = "Model",
+                    value = "llava",
+                    render = False
+                )
+
+                with gr.Column(scale=1):
+
+                    chat = gr.ChatInterface(
+                        fn = ollama_vision_response,
+                        chatbot = bot,
+                        additional_inputs = [dropdown, image]
+                    )
+
 
     # Anthropic Claude Tab
     with gr.Tab("Anthropic"):

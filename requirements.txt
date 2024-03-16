@@ -13,3 +13,5 @@ pymupdf
 python-docx
 anthropic
 pydicom
+ollama
+
