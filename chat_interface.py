@@ -319,7 +319,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             delete_button.click(
                 delete_ollama_model,
                 inputs = model_list,
-                outputs = gr.Textbox()
+                outputs = gr.Textbox(label="Status")
             )
 
     # Anthropic Claude Tab
