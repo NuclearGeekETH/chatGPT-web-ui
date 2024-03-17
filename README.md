@@ -143,7 +143,7 @@ Offering Claude 3, the next generation of AI models.
 
 The three state-of-the-art models—Claude 3 Opus, Claude 3 Sonnet, and Claude 3 Haiku—set new industry benchmarks across reasoning, math, coding, multilingual understanding, and vision.
 
-## Ollama
+### Ollama
 
 Run Llama 2, Code Llama, and other models. Customize and create your own.
 
