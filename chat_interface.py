@@ -299,7 +299,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                     )
 
         with gr.Tab("Models"):
-            gr.Markdown(f"<p>{'Manage your ollama models'}</p>")
+            gr.Markdown(f"<p>{'Manage your Ollama models'}</p>")
 
             get_button = gr.Button("Get Models")
 
