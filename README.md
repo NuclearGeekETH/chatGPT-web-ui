@@ -94,7 +94,7 @@ cd chatGPT-web-ui
 
 ##  Current Tools
 
-#### Chat
+### Chat
 
 Text generation models (often called generative pre-trained transformers or large language models) have been trained to understand natural language, code, and images. The models provide text outputs in response to their inputs. The inputs to these models are also referred to as "prompts". Designing a prompt is essentially how you “program” a large language model model, usually by providing instructions or some examples of how to successfully complete a task.
 
@@ -109,7 +109,7 @@ Using text generation models, you can build applications to:
   - Translate languages
   - Simulate characters for games
 
-#### Vision
+### Vision
 
 GPT-4 with Vision, sometimes referred to as GPT-4V or gpt-4-vision-preview in the API, allows the model to take in images and answer questions about them. Historically, language model systems have been limited by taking in a single input modality, text. For many use cases, this constrained the areas where models like GPT-4 could be used.
 
@@ -117,7 +117,7 @@ GPT-4 with vision is currently available to all developers who have access to GP
 
 Along with OpenAI, now Vision is offered in Ollama, Anthropic and Google Gemini tabs.
 
-#### Image Generation
+### Image Generation
 
 The image generations endpoint allows you to create an original image given a text prompt. When using DALL·E 3, images can have a size of 1024x1024, 1024x1792 or 1792x1024 pixels.
 
@@ -125,7 +125,7 @@ By default, images are generated at standard quality, but when using DALL·E 3 y
 
 Image generation is also available in the Stability.ai tab. There is Text-to-Image, Image-to-Image, Image Upscaling, and Image-to-Video tools available.
 
-#### Text-To-Speech
+### Text-To-Speech
 
 In the OpenAI tab, the Audio API provides a speech endpoint based on our TTS (text-to-speech) model. It comes with 6 built-in voices and can be used to:
 
@@ -155,13 +155,13 @@ Stability.ai is the company that created Stable Diffusion and SDXL. Tools availa
 
 An easy-to-use, ad-free, commercial-grade search tool that lets you deliver the results you want.
 
-### Miscellaneous Search
+## Miscellaneous Tools
 
-#### Annas Search
+### Annas Search
 
 Search Anna's Archive. Anna's Archive mirrors Open Library, Library Genesis, Sci-Hub and Z-Library. Anna's Archive says that it does not host copyrighted materials and that it only indexes metadata that is already publicly available. As of February 1, 2024, Anna's Archive includes 25,530,302 books and 99,425,822 papers.
 
-#### Indeed Job Search
+### Indeed Job Search
 
 Keyword and Location based job search using the Indeed XML feed.
 
