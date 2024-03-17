@@ -322,7 +322,6 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 outputs = gr.Textbox()
             )
 
-
     # Anthropic Claude Tab
     with gr.Tab("Anthropic"):
         # Claude Chat Tab

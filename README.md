@@ -1,6 +1,6 @@
 # NuclearGeek's AI Playground
 
-NuclearGeek's AI Playground is an interactive web application utilizing multiple AI models. With a user-friendly Gradio interface, it allows the user to communicate with various OpenAI, Google Gemini and Stability.ai models including tools to analyze images with Vision, create images with Dall-e-3 or stability, search the web and news articles with Bing, search journal articles using Annas or even look for a new job with Indeed. The application supports multiple GPT and diffusion models and is designed with a set of examples to provide a good starting point for various scenarios. Tabs include OpenAI Chat, OpenAI Vision, Dall-e, Text-to-Speech, Google Gemini Chat, Google Gemini Vision, Stability.ai Text-to-Image, Stability.ai Image-to-Image, Bing Web Search, and Bing News Search.
+NuclearGeek's AI Playground is an interactive web application utilizing multiple AI models. With a user-friendly Gradio interface, it allows the user to communicate with various OpenAI, Ollama, Google Gemini, and Stability.ai models including tools to analyze images with Vision, create images with Dall-e-3 or stability, search the web and news articles with Bing, search journal articles using Annas or even look for a new job with Indeed. The application supports multiple GPT and diffusion models and is designed with a set of examples to provide a good starting point for various scenarios. Tabs include OpenAI, Ollama, Anthropic, Google Gemini, Stability.ai, Bing Search, and some various image editing tools.
 
 ## Installation & Setup
 
@@ -47,6 +47,13 @@ cd chatGPT-web-ui
   - [Stability.ai](https://platform.stability.ai/)
 
   - [Anthropic](https://www.anthropic.com/api)
+
+## Set up Ollama:
+
+  - Set up Ollama according to your operating system and preference: [Ollama](https://ollama.com/).
+
+  - Ensure Ollama is running, models will download upon request but larger models take longer than gradio will wait before throwing an error.
+
 
 ## Running the Chatbot
 
