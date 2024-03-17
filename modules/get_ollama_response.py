@@ -77,17 +77,11 @@ def ollama_vision_response(message, history, model, image=None):
 
     history_response.append({"role": "user", "content": message})
 
-
     if image:
         try:
-            # partial_message = ""
             with open(image, 'rb') as img_file:
                 img_content = img_file.read()
 
-            # # Use the local image content instead of downloading it
-            # for response in ollama.generate('llava', 'explain this image:', images=[img_content], stream=True):
-            #     partial_message = f"{partial_message}{str(response['response'])}" 
-            #     yield partial_message
             stream = ollama.generate(
                 model,
                 message,
@@ -100,11 +94,6 @@ def ollama_vision_response(message, history, model, image=None):
                 if chunk:
                     partial_message = f"{partial_message}{str(chunk['response'])}" 
                     yield partial_message
-
-            # partial_message = ""
-            # for response in ollama.generate(model, message, images=[image], stream=True):
-            #     partial_message = f"{partial_message}{str(response['response'], end='', flush=True)}" 
-            #     yield partial_message
 
         except Exception as e:
             return f"Error: {e}"
