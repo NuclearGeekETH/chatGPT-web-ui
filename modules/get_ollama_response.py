@@ -1,8 +1,7 @@
 import ollama
 import base64
 import io
-import json
-import numpy as np
+from .get_document_data import load_document_into_memory, get_website_data
 
 def ollama_chat_response(message, history, model):
     try:
@@ -106,11 +105,14 @@ def ollama_vision_response(message, history, model, image=None):
         return answer
 
 def get_ollama_model_list():
-    ollama_model_list = ollama.list()
-    model_list = []
-    for x in ollama_model_list['models']:
-        model_list.append(x['name'])
-    return model_list
+    try:
+        ollama_model_list = ollama.list()
+        model_list = []
+        for x in ollama_model_list['models']:
+            model_list.append(x['name'])
+        return model_list
+    except:
+        return f"Error returning Ollama Models"
 
 ollama_model_list = get_ollama_model_list()
 
@@ -120,3 +122,37 @@ def delete_ollama_model(model):
         return f"{model} deleted"
     except Exception as e:
         return f"Error: {e}"
+    
+def ollama_document_response(message, history, model, document=None, link=None):
+
+    history_response = []
+
+    if link:
+        website_data = get_website_data(link)
+        history_response.append({"role": "user", "content": f"The website data is: {website_data}"})
+    if document:
+        document_data = load_document_into_memory(document)
+        history_response.append({"role": "user", "content": f"The website data is: {document_data}"})
+
+    for human, assistant in history:
+        history_response.append({"role": "user", "content": human})
+        history_response.append({"role": "assistant", "content": assistant})
+
+    history_response.append({"role": "user", "content": message})
+
+    try:
+        stream = ollama.chat(
+            model=model,
+            messages=history_response,
+            stream=True,
+        )
+
+        partial_message = ""
+        for chunk in stream:
+            if chunk:
+                partial_message = f"{partial_message}{str(chunk['message']['content'])}" 
+                yield partial_message
+
+    except Exception as e:
+        #Handle API error here, e.g. retry or log
+        return(f"Error: {e}")

@@ -5,7 +5,7 @@ from modules.get_stability_response import stable_text_to_image_response, stable
 from modules.get_azure_response import bing_news, bing_search
 from modules.get_misc_tools import annas_response, parse_indeed_feed, edit_image
 from modules.get_anthropic_response import claude_chat_response, claude_vision_response
-from modules.get_ollama_response import ollama_chat_response, ollama_vision_response, get_ollama_model_list, delete_ollama_model, ollama_model_list
+from modules.get_ollama_response import ollama_chat_response, ollama_vision_response, ollama_document_response, get_ollama_model_list, delete_ollama_model, ollama_model_list
 from utility_scripts.get_stability_models import stability_models
 
 with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
@@ -297,6 +297,36 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                         chatbot = bot,
                         additional_inputs = [dropdown, image]
                     )
+
+        # DataChat Tab
+        with gr.Tab("DataChat"):
+            gr.Markdown(f"<p>{'Chat about data'}</p>")
+
+            bot = gr.Chatbot(render=False)
+
+            document = gr.File(
+                label = "Use any .docx, .xls, .xlsx, .csv, or .pdf file",
+                render = True
+            )
+
+            link = gr.Textbox(
+                label = "Website Link",
+                render = True
+            )
+
+            dropdown = gr.Dropdown(
+                ["llama2", "codellama", "dolphincoder", "llama2-uncensored", "gemma", "mistral", "dolphin-mistral", "wizard-vicuna-uncensored", "openchat", "mixtral", "dolphin-mixtral", "neural-chat", "deepseek-coder", "phi"],
+                label = "Model",
+                value = "llama2",
+                render = False
+            )
+
+            chat = gr.ChatInterface(
+                fn = ollama_document_response,
+                chatbot = bot,
+                additional_inputs = [dropdown, document, link]
+            )
+
 
         with gr.Tab("Models"):
             gr.Markdown(f"<p>{'Manage your Ollama models'}</p>")
