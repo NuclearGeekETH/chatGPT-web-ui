@@ -104,3 +104,19 @@ def ollama_vision_response(message, history, model, image=None):
         answer = "Please upload an image"
 
         return answer
+
+def get_ollama_model_list():
+    ollama_model_list = ollama.list()
+    model_list = []
+    for x in ollama_model_list['models']:
+        model_list.append(x['name'])
+    return model_list
+
+ollama_model_list = get_ollama_model_list()
+
+def delete_ollama_model(model):
+    try:
+        ollama.delete(model)
+        return f"{model} deleted"
+    except Exception as e:
+        return f"Error: {e}"
