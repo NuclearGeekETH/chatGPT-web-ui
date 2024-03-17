@@ -277,7 +277,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             with gr.Row():
                 image = gr.Image(
                     label = "Image Input",
-                    type = "pil",
+                    type = "filepath",
                     render = True,
                     height = "512",
                     width = "512"
