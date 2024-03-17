@@ -305,7 +305,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
 
             get_button.click(
                 get_ollama_model_list,
-                outputs = gr.Textbox()
+                outputs = gr.Textbox(label="Model list")
             )
 
             model_list = gr.Dropdown(
