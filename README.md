@@ -92,15 +92,13 @@ cd chatGPT-web-ui
 
   - For web and news search using bing, just use simple search terms like you would in a search engine.
 
-##  Current Tabs
-
-### OpenAI
+##  Current Tools
 
 #### Chat
 
-OpenAI's text generation models (often called generative pre-trained transformers or large language models) have been trained to understand natural language, code, and images. The models provide text outputs in response to their inputs. The inputs to these models are also referred to as "prompts". Designing a prompt is essentially how you “program” a large language model model, usually by providing instructions or some examples of how to successfully complete a task.
+Text generation models (often called generative pre-trained transformers or large language models) have been trained to understand natural language, code, and images. The models provide text outputs in response to their inputs. The inputs to these models are also referred to as "prompts". Designing a prompt is essentially how you “program” a large language model model, usually by providing instructions or some examples of how to successfully complete a task.
 
-Using OpenAI's text generation models, you can build applications to:
+Using text generation models, you can build applications to:
 
   - Draft documents
   - Write computer code
@@ -117,15 +115,19 @@ GPT-4 with Vision, sometimes referred to as GPT-4V or gpt-4-vision-preview in th
 
 GPT-4 with vision is currently available to all developers who have access to GPT-4 via the gpt-4-vision-preview model and the Chat Completions API which has been updated to support image inputs. Note that the Assistants API does not currently support image inputs.
 
-#### Dall-e
+Along with OpenAI, now Vision is offered in Ollama, Anthropic and Google Gemini tabs.
+
+#### Image Generation
 
 The image generations endpoint allows you to create an original image given a text prompt. When using DALL·E 3, images can have a size of 1024x1024, 1024x1792 or 1792x1024 pixels.
 
 By default, images are generated at standard quality, but when using DALL·E 3 you can set quality: "hd" for enhanced detail. Square, standard quality images are the fastest to generate.
 
+Image generation is also available in the Stability.ai tab. There is Text-to-Image, Image-to-Image, Image Upscaling, and Image-to-Video tools available.
+
 #### Text-To-Speech
 
-The Audio API provides a speech endpoint based on our TTS (text-to-speech) model. It comes with 6 built-in voices and can be used to:
+In the OpenAI tab, the Audio API provides a speech endpoint based on our TTS (text-to-speech) model. It comes with 6 built-in voices and can be used to:
 
   - Narrate a written blog post
   - Produce spoken audio in multiple languages
@@ -134,6 +136,16 @@ The Audio API provides a speech endpoint based on our TTS (text-to-speech) model
 ### Google Gemini
 
 Gemini is a family of generative AI models that lets developers generate content and solve problems. These models are designed and trained to handle both text and images as input.
+
+### Anthropic
+
+Offering Claude 3, the next generation of AI models. 
+
+The three state-of-the-art models—Claude 3 Opus, Claude 3 Sonnet, and Claude 3 Haiku—set new industry benchmarks across reasoning, math, coding, multilingual understanding, and vision.
+
+## Ollama
+
+Run Llama 2, Code Llama, and other models. Customize and create your own.
 
 ### Stability AI
 
