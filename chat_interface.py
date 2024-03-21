@@ -747,7 +747,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
 if __name__ == "__main__":
     demo.queue()
     # # Toggle this on if you want to share your app, change the username and password
-    # demo.launch(server_port=7862, share=True, auth=("nuke", "Nuclear0224!"))
+    # demo.launch(server_port=7862, share=True, auth=("nuke", "password"))
 
     # Toggle this on if you want to only run local
     demo.launch()
