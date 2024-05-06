@@ -3,7 +3,7 @@ import base64
 import io
 from .get_document_data import load_document_into_memory, get_website_data
 
-def ollama_chat_response(message, history, model):
+def ollama_chat_response(message, history, model, system):
     try:
         ollama.chat(model)
     except ollama.ResponseError as e:
@@ -20,6 +20,7 @@ def ollama_chat_response(message, history, model):
         history_response.append({"role": "assistant", "content": assistant})
 
     history_response.append({"role": "user", "content": message})
+    history_response.append({"role": "system", "content": system})
 
     try:
         stream = ollama.chat(

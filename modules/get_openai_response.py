@@ -223,3 +223,45 @@ def vision_response(message, history, image=None):
         answer = "Please upload an image"
 
         return answer
+
+def transcribe_audio(audio_path):
+    """
+    Transcribe the audio at the given path using OpenAI's Whisper model.
+    """
+    with open(audio_path, 'rb') as audio_file:
+        response = openai.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_file,
+            response_format="text"
+        )
+    return response
+    
+def voice_chat_response(message, history, model, system):
+    history_response = []
+
+    history_response.append({"role": "system", "content": f"{system} Current Date: {date.today()}"})
+
+    for human, assistant in history:
+        history_response.append({"role": "user", "content": human})
+        history_response.append({"role": "assistant", "content": assistant})
+
+    history_response.append({"role": "user", "content": message})
+
+    try:
+        completion = openai.chat.completions.create(
+            model = model,
+            messages = history_response,
+            stream=True
+        )
+
+        # Stream Response
+        partial_message = ""
+        for chunk in completion:
+            if chunk.choices[0].delta.content != None:
+                partial_message = partial_message + str(chunk.choices[0].delta.content)
+                if partial_message:
+                    yield partial_message
+
+    except Exception as e:
+        #Handle API error here, e.g. retry or log
+        return(f"OpenAI API returned an API Error: {e}")

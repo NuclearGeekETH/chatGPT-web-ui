@@ -33,3 +33,5 @@ def get_stability_models():
 
 stability_models = get_stability_models()
 
+print(stability_models)
+
