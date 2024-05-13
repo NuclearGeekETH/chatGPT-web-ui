@@ -9,6 +9,9 @@ from datetime import date
 from PIL import Image
 from pathlib import Path
 from urllib.parse import urlparse
+import cv2
+from moviepy.editor import VideoFileClip
+import time
 from .get_document_data import load_document_into_memory, get_website_data
 
 load_dotenv()
@@ -265,3 +268,116 @@ def voice_chat_response(message, history, model, system):
     except Exception as e:
         #Handle API error here, e.g. retry or log
         return(f"OpenAI API returned an API Error: {e}")
+
+def process_video(video_path, seconds_per_frame=2):
+    base64Frames = []
+    base_video_path, _ = os.path.splitext(video_path)
+
+    video = cv2.VideoCapture(video_path)
+    total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps = video.get(cv2.CAP_PROP_FPS)
+    frames_to_skip = int(fps * seconds_per_frame)
+    curr_frame=0
+
+    # Loop through the video and extract frames at specified sampling rate
+    while curr_frame < total_frames - 1:
+        video.set(cv2.CAP_PROP_POS_FRAMES, curr_frame)
+        success, frame = video.read()
+        if not success:
+            break
+        _, buffer = cv2.imencode(".jpg", frame)
+        base64Frames.append(base64.b64encode(buffer).decode("utf-8"))
+        curr_frame += frames_to_skip
+    video.release()
+
+    # Extract audio from video
+    audio_path = f"{base_video_path}.mp3"
+    clip = VideoFileClip(video_path)
+    clip.audio.write_audiofile(audio_path, bitrate="32k")
+    clip.audio.close()
+    clip.close()
+
+    print(f"Extracted {len(base64Frames)} frames")
+    print(f"Extracted audio to {audio_path}")
+    return base64Frames, audio_path
+
+
+
+def video_response(message, history, video=None):
+    history_response = []
+
+    for human, assistant in history:
+        history_response.append({"role": "user", "content": human})
+        history_response.append({"role": "assistant", "content": assistant})
+
+    history_response.append({"role": "user", "content": message})
+
+    if video:
+        # Extract 1 frame per second. You can adjust the `seconds_per_frame` parameter to change the sampling rate
+        base64Frames, audio_path = process_video(video, seconds_per_frame=1)
+
+        # response = openai.chat.completions.create(
+        #     model="gpt-4o",
+        #     messages=[
+        #     {"role": "system", "content": "You are generating a video summary. Please provide a summary of the video. Respond in Markdown."},
+        #     {"role": "user", "content": [
+        #         "These are the frames from the video.",
+        #         *map(lambda x: {"type": "image_url", 
+        #                         "image_url": {"url": f'data:image/jpg;base64,{x}', "detail": "low"}}, base64Frames)
+        #         ],
+        #     }
+        #     ],
+        #     temperature=0,
+        # )
+        # video_summary = response.choices[0].message.content
+
+        # Transcribe the audio
+        transcription = openai.audio.transcriptions.create(
+            model="whisper-1",
+            file=open(audio_path, "rb"),
+        )
+        ## OPTIONAL: Uncomment the line below to print the transcription
+        #print("Transcript: ", transcription.text + "\n\n")
+
+        # response = openai.chat.completions.create(
+        #     model="whisper-1",
+        #     messages=[
+        #     {"role": "system", "content":"""You are generating a transcript summary. Create a summary of the provided transcription. Respond in Markdown."""},
+        #     {"role": "user", "content": [
+        #         {"type": "text", "text": f"The audio transcription is: {transcription.text}"}
+        #         ],
+        #     }
+        #     ],
+        #     temperature=0,
+        # )
+        # audio_summary = response.choices[0].message.content
+        try:
+            ## Generate a summary with visual and audio
+            response = openai.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                {"role": "system", "content":"""You are generating a video summary. Create a summary of the provided video and its transcript. Respond in Markdown"""},
+                {"role": "user", "content": [
+                    "These are the frames from the video.",
+                    *map(lambda x: {"type": "image_url", 
+                                    "image_url": {"url": f'data:image/jpg;base64,{x}', "detail": "low"}}, base64Frames),
+                    {"type": "text", "text": f"The audio transcription is: {transcription.text}"}
+                    ],
+                }
+            ],
+                temperature=0,
+                stream=True
+            )
+            # print(response.choices[0].message.content)
+
+            # Stream Response
+            partial_message = ""
+            for chunk in response:
+                if chunk.choices[0].delta.content != None:
+                    partial_message = partial_message + str(chunk.choices[0].delta.content)
+                    if partial_message:
+                        yield partial_message
+
+        except Exception as e:
+            #Handle API error here, e.g. retry or log
+            return(f"OpenAI API returned an API Error: {e}")

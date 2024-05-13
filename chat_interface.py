@@ -1,5 +1,5 @@
 import gradio as gr
-from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response, chat_document_response, chat_job_response
+from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response, chat_document_response, chat_job_response, video_response
 from modules.get_gemini_response import google_chat_response, google_vision_response
 from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response, resize_image
 from modules.get_azure_response import bing_news, bing_search
@@ -21,9 +21,9 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             bot = gr.Chatbot(render=False)
 
             dropdown = gr.Dropdown(
-                ["gpt-4-0125-preview", "gpt-4-turbo", "gpt-4-1106-preview", "gpt-4", "gpt-3.5-turbo-1106", "gpt-3.5-turbo"],
+                ["gpt-4o", "gpt-4-0125-preview", "gpt-4-turbo", "gpt-4-1106-preview", "gpt-4", "gpt-3.5-turbo-1106", "gpt-3.5-turbo"],
                 label = "Model",
-                value = "gpt-4-turbo",
+                value = "gpt-4o",
                 render = False
             )
 
@@ -189,6 +189,26 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                         chatbot = bot,
                         additional_inputs = [image]
                     )
+
+        # Vision Tab
+        with gr.Tab("Video"):
+            gr.Markdown(f"<p>{'Ask questions about a video'}</p>")
+            bot = gr.Chatbot(render=False)
+            with gr.Row():
+                video = gr.Video(
+                    label = "Video Input",
+                    format="mp4",
+                    render = True,
+                )
+
+                with gr.Column(scale=1):
+
+                    chat = gr.ChatInterface(
+                        fn = video_response,
+                        chatbot = bot,
+                        additional_inputs = [video]
+                    )
+
 
         # Dalle Tab
         with gr.Tab("Dall-e"):
