@@ -177,43 +177,26 @@ def encode_image_to_base64(image):
 def vision_response(message, history, image=None):
     history_response = []
 
+    history_response.append({"role": "system", "content": f"You are a helpful assistant that responds in Markdown. Current Date: {date.today()}"})
+
     for human, assistant in history:
         history_response.append({"role": "user", "content": human})
         history_response.append({"role": "assistant", "content": assistant})
 
-    history_response.append({"role": "user", "content": message})
 
     if image:
         base64_image = encode_image_to_base64(image)
         # include the image in the messages
-        image_message = {
-            "role": "user",
-            "content": [
-                {
-                    "type": "text",
-                    "text": message
-                },
-                {
-                    "type": "image_url",
-                    "image_url": {
-                    "url": f"data:image/jpeg;base64,{base64_image}"
-                    }
-                }
-            ]
-        }
-        history_response.append(image_message)
+        history_response.append({"role": "user", "content": [
+                                    {"type": "text", "text": message},
+                                    {"type": "image_url", "image_url": {
+                                        "url": f"data:image/png;base64,{base64_image}"}
+                                    }
+                                ]})
         try:
             completion = openai.chat.completions.create(
                 model="gpt-4o",
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant that responds in Markdown."},
-                    {"role": "user", "content": [
-                        {"type": "text", "text": message},
-                        {"type": "image_url", "image_url": {
-                            "url": f"data:image/png;base64,{base64_image}"}
-                        }
-                    ]}
-                ],
+                messages= history_response,
                 temperature=0.0,
                 stream=True
             )
