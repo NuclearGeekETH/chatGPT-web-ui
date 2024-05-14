@@ -294,15 +294,6 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
         with gr.Tab("VoiceChat"):
             gr.Markdown(f"<p>{'Use your voice with ChatGPT with optional parameters below'}</p>")
 
-            bot = gr.Chatbot(render=False)
-
-            dropdown = gr.Dropdown(
-                ["gpt-4o", "gpt-4-0125-preview", "gpt-4-turbo-preview", "gpt-4-1106-preview", "gpt-4", "gpt-3.5-turbo-1106", "gpt-3.5-turbo"],
-                label = "Model",
-                value = "gpt-4o",
-                render = False
-            )
-
             audio = gr.Audio(
                 label = "Audio Input",
                 type="filepath",
@@ -310,10 +301,17 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 render = True
                 )
 
-            chat = gr.ChatInterface(
+            response = gr.Audio(
+                autoplay=True,
+                render=True
+                )
+
+            state = gr.State([])
+
+            chat = gr.Interface(
                 fn = voice_chat_response,
-                chatbot = bot,
-                additional_inputs = [dropdown, audio]
+                inputs = [audio, state],
+                outputs = [response, state]
             )
 
     with gr.Tab("Ollama"):

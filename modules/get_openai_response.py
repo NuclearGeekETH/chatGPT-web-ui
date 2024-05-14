@@ -279,19 +279,16 @@ def transcribe_audio(audio_path):
         )
     return response
     
-def voice_chat_response(message, history, model, audio):
+def voice_chat_response(audio, history):
+
     history_response = []
 
-    history_response.append({"role": "system", "content": f"You are a helpful assistant. Current Date: {date.today()}"})
+    history_response.append({"role": "system", "content": f"You are a helpful assistant, keep responses short and succinct as they will be spoken. Be over the top friendly. Current Date: {date.today()}"})
 
-    for human, assistant in history:
-        history_response.append({"role": "user", "content": human})
-        history_response.append({"role": "assistant", "content": assistant})
+    for idx, item in enumerate(history):
+        print(f"Processing item {idx}: {item}")
+        history_response.append(item)
 
-    # history_response.append({"role": "user", "content": message})
-
-    print(audio)
-    
     if audio:
         transcription = openai.audio.transcriptions.create(
             model="whisper-1",
@@ -302,18 +299,31 @@ def voice_chat_response(message, history, model, audio):
 
         try:
             completion = openai.chat.completions.create(
-                model = model,
+                model = "gpt-4o",
                 messages = history_response,
-                stream=True
             )
 
-            # Stream Response
-            partial_message = ""
-            for chunk in completion:
-                if chunk.choices[0].delta.content != None:
-                    partial_message = partial_message + str(chunk.choices[0].delta.content)
-                    if partial_message:
-                        yield partial_message
+            completion_response = completion.choices[0].message.content
+
+            history_response.append({"role": "assistant", "content": completion_response})
+
+            speech_file_path = Path(__file__).parent / "speech.mp3"
+
+            try:
+                response = openai.audio.speech.create(
+                    model = "tts-1",
+                    voice = "shimmer",
+                    input = completion_response
+                )
+
+                response.stream_to_file(speech_file_path)
+
+                return speech_file_path, history_response
+            
+            except Exception as e:
+                #Handle API error here, e.g. retry or log
+                return(f"OpenAI API returned an API Error: {e}")
+
 
         except Exception as e:
             #Handle API error here, e.g. retry or log
