@@ -1,5 +1,5 @@
 import gradio as gr
-from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response, chat_document_response, chat_job_response, video_response
+from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response, chat_document_response, chat_job_response, video_response, voice_chat_response, vision_gallery_response
 from modules.get_gemini_response import google_chat_response, google_vision_response
 from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response, resize_image
 from modules.get_azure_response import bing_news, bing_search
@@ -83,9 +83,9 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             )
 
             dropdown = gr.Dropdown(
-                ["gpt-4-0125-preview", "gpt-4-turbo-preview", "gpt-4-1106-preview", "gpt-4", "gpt-3.5-turbo-1106", "gpt-3.5-turbo"],
+                ["gpt-4o", "gpt-4-0125-preview", "gpt-4-turbo-preview", "gpt-4-1106-preview", "gpt-4", "gpt-3.5-turbo-1106", "gpt-3.5-turbo"],
                 label = "Model",
-                value = "gpt-4-0125-preview",
+                value = "gpt-4o",
                 render = False
             )
 
@@ -114,9 +114,9 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             )
 
             dropdown = gr.Dropdown(
-                ["gpt-4-0125-preview", "gpt-4-turbo-preview", "gpt-4-1106-preview", "gpt-4", "gpt-3.5-turbo-1106", "gpt-3.5-turbo"],
+                ["gpt-4o", "gpt-4-0125-preview", "gpt-4-turbo-preview", "gpt-4-1106-preview", "gpt-4", "gpt-3.5-turbo-1106", "gpt-3.5-turbo"],
                 label = "Model",
-                value = "gpt-4-0125-preview",
+                value = "gpt-4o",
                 render = False
             )
 
@@ -150,9 +150,9 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             )
 
             dropdown = gr.Dropdown(
-                ["gpt-4-0125-preview", "gpt-4-turbo-preview", "gpt-4-1106-preview", "gpt-4", "gpt-3.5-turbo-1106", "gpt-3.5-turbo"],
+                ["gpt-4o", "gpt-4-0125-preview", "gpt-4-turbo-preview", "gpt-4-1106-preview", "gpt-4", "gpt-3.5-turbo-1106", "gpt-3.5-turbo"],
                 label = "Model",
-                value = "gpt-4-0125-preview",
+                value = "gpt-4o",
                 render = False
             )
 
@@ -186,6 +186,25 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
 
                     chat = gr.ChatInterface(
                         fn = vision_response,
+                        chatbot = bot,
+                        additional_inputs = [image]
+                    )
+
+        # Vision Gallery Tab
+        with gr.Tab("VisionGallery"):
+            gr.Markdown(f"<p>{'Ask questions about a set of images'}</p>")
+            bot = gr.Chatbot(render=False)
+            with gr.Row():
+                image = gr.Gallery(
+                    label = "Image Input",
+                    type = "pil",
+                    render = True,
+                )
+
+                with gr.Column(scale=1):
+
+                    chat = gr.ChatInterface(
+                        fn = vision_gallery_response,
                         chatbot = bot,
                         additional_inputs = [image]
                     )
@@ -278,23 +297,23 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             bot = gr.Chatbot(render=False)
 
             dropdown = gr.Dropdown(
-                ["gpt-4-0125-preview", "gpt-4-turbo-preview", "gpt-4-1106-preview", "gpt-4", "gpt-3.5-turbo-1106", "gpt-3.5-turbo"],
+                ["gpt-4o", "gpt-4-0125-preview", "gpt-4-turbo-preview", "gpt-4-1106-preview", "gpt-4", "gpt-3.5-turbo-1106", "gpt-3.5-turbo"],
                 label = "Model",
-                value = "gpt-4-0125-preview",
+                value = "gpt-4o",
                 render = False
             )
 
-            system = gr.Textbox(
-                lines = 2,
-                label = "System Message",
-                value = f"You are ChatGPT, a large language model trained by OpenAI based on the GPT-4 architecture.",
-                render = False
+            audio = gr.Audio(
+                label = "Audio Input",
+                type="filepath",
+                format = "mp3",
+                render = True
                 )
 
             chat = gr.ChatInterface(
-                fn = chat_response,
+                fn = voice_chat_response,
                 chatbot = bot,
-                additional_inputs = [dropdown, system]
+                additional_inputs = [dropdown, audio]
             )
 
     with gr.Tab("Ollama"):

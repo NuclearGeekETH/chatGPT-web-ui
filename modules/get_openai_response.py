@@ -183,7 +183,6 @@ def vision_response(message, history, image=None):
         history_response.append({"role": "user", "content": human})
         history_response.append({"role": "assistant", "content": assistant})
 
-
     if image:
         base64_image = encode_image_to_base64(image)
         # include the image in the messages
@@ -193,6 +192,55 @@ def vision_response(message, history, image=None):
                                         "url": f"data:image/png;base64,{base64_image}"}
                                     }
                                 ]})
+        try:
+            completion = openai.chat.completions.create(
+                model="gpt-4o",
+                messages= history_response,
+                temperature=0.0,
+                stream=True
+            )
+            # Stream Response
+            partial_message = ""
+            for chunk in completion:
+                if chunk.choices[0].delta.content != None:
+                    partial_message = partial_message + str(chunk.choices[0].delta.content)
+                    if partial_message:
+                        yield partial_message
+        
+        except Exception as e:
+            #Handle API error here, e.g. retry or log
+            return(f"OpenAI API returned an API Error: {e}")
+
+    else:
+        history_response.append({"role": "user", "content": message})
+
+        answer = "Please upload an image"
+
+        return answer
+
+def vision_gallery_response(message, history, images=None):
+    history_response = []
+
+    history_response.append({"role": "system", "content": f"You are a helpful assistant that responds in Markdown. Current Date: {date.today()}"})
+
+    for human, assistant in history:
+        history_response.append({"role": "user", "content": human})
+        history_response.append({"role": "assistant", "content": assistant})
+
+    if images:
+        base64Frames = []
+        for image, _ in images:
+            base64_image = encode_image_to_base64(image)
+            base64Frames.append(base64_image)
+        # include the image in the messages
+        history_response.append({"role": "user", "content": [
+                                    "These are the frames from the video.",
+                                    *map(lambda x: {"type": "image_url", 
+                                                    "image_url": {"url": f'data:image/jpg;base64,{x}', "detail": "low"}}, base64Frames),
+                                    {"type": "text", "text": message},
+                                    ],
+                                }
+                                )
         try:
             completion = openai.chat.completions.create(
                 model="gpt-4o",
@@ -231,35 +279,45 @@ def transcribe_audio(audio_path):
         )
     return response
     
-def voice_chat_response(message, history, model, system):
+def voice_chat_response(message, history, model, audio):
     history_response = []
 
-    history_response.append({"role": "system", "content": f"{system} Current Date: {date.today()}"})
+    history_response.append({"role": "system", "content": f"You are a helpful assistant. Current Date: {date.today()}"})
 
     for human, assistant in history:
         history_response.append({"role": "user", "content": human})
         history_response.append({"role": "assistant", "content": assistant})
 
-    history_response.append({"role": "user", "content": message})
+    # history_response.append({"role": "user", "content": message})
 
-    try:
-        completion = openai.chat.completions.create(
-            model = model,
-            messages = history_response,
-            stream=True
+    print(audio)
+    
+    if audio:
+        transcription = openai.audio.transcriptions.create(
+            model="whisper-1",
+            file=open(audio, "rb"),
         )
 
-        # Stream Response
-        partial_message = ""
-        for chunk in completion:
-            if chunk.choices[0].delta.content != None:
-                partial_message = partial_message + str(chunk.choices[0].delta.content)
-                if partial_message:
-                    yield partial_message
+        history_response.append({"role": "user", "content": transcription.text})
 
-    except Exception as e:
-        #Handle API error here, e.g. retry or log
-        return(f"OpenAI API returned an API Error: {e}")
+        try:
+            completion = openai.chat.completions.create(
+                model = model,
+                messages = history_response,
+                stream=True
+            )
+
+            # Stream Response
+            partial_message = ""
+            for chunk in completion:
+                if chunk.choices[0].delta.content != None:
+                    partial_message = partial_message + str(chunk.choices[0].delta.content)
+                    if partial_message:
+                        yield partial_message
+
+        except Exception as e:
+            #Handle API error here, e.g. retry or log
+            return(f"OpenAI API returned an API Error: {e}")
 
 def process_video(video_path, seconds_per_frame=2):
     base64Frames = []
