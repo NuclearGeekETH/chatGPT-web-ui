@@ -202,23 +202,32 @@ def vision_response(message, history, image=None):
             ]
         }
         history_response.append(image_message)
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {key}"
-        }
-        payload = {
-            "model": "gpt-4-vision-preview",
-            "messages": history_response,
-            "max_tokens": 1000
-        }
         try:
-            response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-            result = response.json()["choices"][0]["message"]["content"]
-
-            return(result)
+            completion = openai.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant that responds in Markdown."},
+                    {"role": "user", "content": [
+                        {"type": "text", "text": message},
+                        {"type": "image_url", "image_url": {
+                            "url": f"data:image/png;base64,{base64_image}"}
+                        }
+                    ]}
+                ],
+                temperature=0.0,
+                stream=True
+            )
+            # Stream Response
+            partial_message = ""
+            for chunk in completion:
+                if chunk.choices[0].delta.content != None:
+                    partial_message = partial_message + str(chunk.choices[0].delta.content)
+                    if partial_message:
+                        yield partial_message
         
-        except:
-            return(f"ERROR: {response}")
+        except Exception as e:
+            #Handle API error here, e.g. retry or log
+            return(f"OpenAI API returned an API Error: {e}")
 
     else:
         history_response.append({"role": "user", "content": message})
