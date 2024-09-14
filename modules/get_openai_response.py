@@ -2,7 +2,6 @@ import openai
 import os
 import base64
 import io
-import requests
 import numpy as np
 from dotenv import load_dotenv
 from datetime import date
@@ -11,7 +10,6 @@ from pathlib import Path
 from urllib.parse import urlparse
 import cv2
 from moviepy.editor import VideoFileClip
-import time
 from .get_document_data import load_document_into_memory, get_website_data
 
 load_dotenv()
@@ -323,7 +321,6 @@ def voice_chat_response(audio, history):
             except Exception as e:
                 #Handle API error here, e.g. retry or log
                 return(f"OpenAI API returned an API Error: {e}")
-
 
         except Exception as e:
             #Handle API error here, e.g. retry or log

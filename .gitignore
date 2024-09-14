@@ -5,3 +5,4 @@ venv
 /modules/__pycache__
 video.mp4
 *.pyc
+/executable_test
