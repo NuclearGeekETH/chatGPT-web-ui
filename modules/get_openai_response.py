@@ -19,30 +19,50 @@ key = os.getenv("OPENAI_API_KEY")
 openai.api_key = key
 
 def chat_response(message, history, model, system):
-    history_response = []
-
-    history_response.append({"role": "system", "content": f"{system} Current Date: {date.today()}"})
-
-    for human, assistant in history:
-        history_response.append({"role": "user", "content": human})
-        history_response.append({"role": "assistant", "content": assistant})
-
-    history_response.append({"role": "user", "content": message})
-
     try:
-        completion = openai.chat.completions.create(
-            model = model,
-            messages = history_response,
-            stream=True
-        )
+        test_models = ["o1-preview", "o1-mini"]
+        if model in test_models:
+            history_response = []
 
-        # Stream Response
-        partial_message = ""
-        for chunk in completion:
-            if chunk.choices[0].delta.content != None:
-                partial_message = partial_message + str(chunk.choices[0].delta.content)
-                if partial_message:
-                    yield partial_message
+            for human, assistant in history:
+                history_response.append({"role": "user", "content": human})
+                history_response.append({"role": "assistant", "content": assistant})
+
+            history_response.append({"role": "user", "content": message})
+            
+            completion = openai.chat.completions.create(
+                model = model,
+                messages = history_response,
+            )
+
+            answer = completion.choices[0].message.content
+
+            yield answer 
+                  
+        else:
+            history_response = []
+
+            history_response.append({"role": "system", "content": f"{system} Current Date: {date.today()}"})
+
+            for human, assistant in history:
+                history_response.append({"role": "user", "content": human})
+                history_response.append({"role": "assistant", "content": assistant})
+
+            history_response.append({"role": "user", "content": message})
+            
+            completion = openai.chat.completions.create(
+                model = model,
+                messages = history_response,
+                stream=True
+            )
+
+            # Stream Response
+            partial_message = ""
+            for chunk in completion:
+                if chunk.choices[0].delta.content != None:
+                    partial_message = partial_message + str(chunk.choices[0].delta.content)
+                    if partial_message:
+                        yield partial_message
 
     except Exception as e:
         #Handle API error here, e.g. retry or log

@@ -2,6 +2,7 @@ import gradio as gr
 from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response, chat_document_response, chat_job_response, video_response, voice_chat_response, vision_gallery_response
 from modules.get_gemini_response import google_chat_response, google_vision_response
 from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response, resize_image
+from modules.get_flux_response import flux_text_to_image_response
 from modules.get_azure_response import bing_news, bing_search
 from modules.get_misc_tools import annas_response, parse_indeed_feed, edit_image
 from modules.get_anthropic_response import claude_chat_response, claude_vision_response
@@ -21,9 +22,9 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             bot = gr.Chatbot(render=False)
 
             dropdown = gr.Dropdown(
-                ["gpt-4o-2024-08-06", "gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest", "gpt-4-0125-preview", "gpt-4-turbo", "gpt-4-1106-preview", "gpt-4"],
+                ["o1-preview", "o1-mini", "gpt-4o-2024-08-06", "gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest", "gpt-4-0125-preview", "gpt-4-turbo", "gpt-4-1106-preview", "gpt-4"],
                 label = "Model",
-                value = "gpt-4o-2024-08-06",
+                value = "gpt-4o",
                 render = False
             )
 
@@ -710,6 +711,32 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 fn = stable_image_to_video_response,
                 inputs = [motion_slider, cfg_slider, image], 
                 outputs=[gr.Video(label="Output Video")]
+            )
+
+    with gr.Tab("Flux"):
+        # Text-to-Image Tab
+        with gr.Tab("Text-to-Image"):
+            gr.Markdown(f"<p>{'Create images with FLUX API'}</p>")
+
+            with gr.Row():
+                width_slider = gr.Slider(
+                    512,1792,
+                    label = "Width",
+                    value = 1024,
+                    render = False
+                )
+
+                height_slider = gr.Slider(
+                    512,1792,
+                    label = "Height",
+                    value = 1024,
+                    render = False
+                )
+
+            chat = gr.Interface(
+                fn = flux_text_to_image_response,
+                inputs = [gr.Text(label="Input Prompt"), width_slider, height_slider], 
+                outputs=[gr.Image(label="Output Image")]
             )
 
     with gr.Tab("Bing"):
