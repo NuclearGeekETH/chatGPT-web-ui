@@ -28,12 +28,8 @@ def flux_text_to_image_response(prompt, width, height):
             headers=headers,
             json=json,
         ).json()
-
-        print(response)
-        
+      
         request_id = response["id"]
-
-        print(request_id)
 
         while True:
             time.sleep(0.5)
