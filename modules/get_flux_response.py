@@ -46,6 +46,9 @@ def flux_text_to_image_response(prompt, width, height):
             if result["status"] == "Ready":
                 print(f"Result: {result['result']['sample']}")
                 return result['result']['sample']
+            if result["status"] == "Request Moderated":
+                print(f"Status: {result['status']}")
+                return result['status']
             else:
                 print(f"Status: {result['status']}")
        
