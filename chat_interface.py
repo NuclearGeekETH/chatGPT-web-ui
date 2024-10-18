@@ -1,5 +1,5 @@
 import gradio as gr
-from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response, chat_document_response, chat_job_response, video_response, voice_chat_response, vision_gallery_response
+from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response, chat_document_response, chat_job_response, video_response, voice_chat_response, vision_gallery_response, realtime_response
 from modules.get_gemini_response import google_chat_response, google_vision_response
 from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response, resize_image
 from modules.get_flux_response import flux_text_to_image_response
@@ -261,6 +261,34 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 fn = dalle_response,
                 inputs = [gr.Text(label="Input Prompt"), size_dropdown, quality_dropdown, style_dropdown], 
                 outputs=[gr.Text(label="Output Prompt"), gr.Image(type="numpy", label="Output Image")]
+            )
+
+        # Audio Gen Tab
+        with gr.Tab("Audio"):
+            gr.Markdown(f"<p>{'Create Text-To-Speech or Speech-To-Speech'}</p>")
+
+            bot = gr.Chatbot(render=False)
+
+            with gr.Row():
+
+                audio = gr.Audio(
+                    label = "Audio Input",
+                    type="numpy",
+                    render = False
+                )
+
+                voice_dropdown = gr.Dropdown(
+                    ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
+                    label = "Voice",
+                    value = "alloy",
+                    render = False
+                )
+
+            chat = gr.Interface(
+                fn = realtime_response,
+                inputs = [gr.Text(label="Input Prompt"), gr.Text(label="Audio ID"), audio],
+                additional_inputs = [voice_dropdown],
+                outputs=[gr.Text(label="Output Text"), gr.Audio(label="Output Audio"), gr.Text(label="Audio_id")]
             )
 
         # TTS Tab

@@ -2,11 +2,14 @@ import openai
 import os
 import base64
 import io
+import wave
 import numpy as np
 from dotenv import load_dotenv
 from datetime import date
 from PIL import Image
 from pathlib import Path
+from pydub import AudioSegment
+import soundfile as sf
 from urllib.parse import urlparse
 import cv2
 from moviepy.editor import VideoFileClip
@@ -19,10 +22,13 @@ key = os.getenv("OPENAI_API_KEY")
 openai.api_key = key
 
 def chat_response(message, history, model, system):
+    print(history)
+
     try:
         test_models = ["o1-preview", "o1-mini"]
         if model in test_models:
             history_response = []
+
 
             for human, assistant in history:
                 history_response.append({"role": "user", "content": human})
@@ -143,7 +149,87 @@ def chat_job_response(message, history, document, link, model, system):
         #Handle API error here, e.g. retry or log
         return(f"OpenAI API returned an API Error: {e}")
 
+def convert_audio_to_pcm_base64(audio_data, sample_rate, num_channels=1, sample_width=2):
+    # Ensure audio data is in the correct format
+    if audio_data.dtype != np.int16:
+        if audio_data.dtype == np.float32 or audio_data.dtype == np.float64:
+            # Normalize and convert to 16-bit PCM
+            audio_data = (audio_data * 32767).astype(np.int16)
+        else:
+            raise ValueError("Audio data type conversion is required to 16-bit integer format.")
 
+    # Create a bytes buffer to write the WAV file
+    wav_buffer = io.BytesIO()
+
+    # Establish a WAV file writer
+    with wave.open(wav_buffer, 'wb') as wav_file:
+        wav_file.setnchannels(num_channels)
+        wav_file.setsampwidth(sample_width)
+        wav_file.setframerate(sample_rate)
+        wav_file.writeframes(audio_data.tobytes())
+
+    # Retrieve the WAV file bytes
+    wav_bytes = wav_buffer.getvalue()
+
+    # Encode the WAV bytes into Base64
+    wav_base64 = base64.b64encode(wav_bytes)
+
+    # Return the Base64 string
+    return wav_base64.decode('utf-8')
+
+def realtime_response(text, audio_id, audio_data, voice):
+    content = []
+    history_response = []
+
+    # audio = AudioSegment.from_file(io.BytesIO(audio_np))
+    
+    # # Resample to 24kHz mono pcm16
+    # pcm_audio = audio.set_frame_rate(24000).set_channels(1).set_sample_width(2).raw_data
+    
+    # # Encode to base64 string
+    # pcm_base64 = base64.b64encode(audio_np).decode()
+
+    if text:
+        content.append({"type": "text", "text": text})
+
+    if audio_data:
+        sample_rate, audio_np = audio_data
+
+        pcm_base64 = convert_audio_to_pcm_base64(audio_np, sample_rate)
+        content.append({"type": "input_audio", "input_audio": {"data": pcm_base64, "format": "wav"}})
+
+    # if audio_id:
+    #     history_response.append({"role": "user", "content": content})
+
+    history_response.append({"role": "user", "content": content})
+
+    print(history_response)
+
+    try:
+        response = openai.chat.completions.create(
+            model="gpt-4o-audio-preview",
+            modalities=["text", "audio"],
+            audio={"voice": voice, "format": "wav"},
+            messages=history_response
+        )
+
+        transcript = response.choices[0].message.audio.transcript
+        
+        print(transcript)
+
+        try:
+            wav_bytes = base64.b64decode(response.choices[0].message.audio.data)
+
+            audio_id = response.choices[0].message.audio.id
+
+            return transcript, wav_bytes, audio_id
+        except:
+            return transcript, None, None
+
+    except Exception as e:
+        print(f"Error during communication: {e}")
+        return None, None, None
+    
 def dalle_response(message, size, quality, style):
     try:
         response = openai.images.generate(

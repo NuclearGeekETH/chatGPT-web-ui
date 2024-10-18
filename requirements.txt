@@ -16,4 +16,4 @@ pydicom
 ollama
 opencv-python 
 moviepy 
-
+soundfile
