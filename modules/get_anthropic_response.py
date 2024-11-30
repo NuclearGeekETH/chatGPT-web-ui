@@ -22,7 +22,7 @@ def claude_chat_response(message, history, model, system):
     try:
         partial_message = ""
         with client.messages.stream(
-            max_tokens=1024,
+            max_tokens=4096,
             system=system,
             messages=history_response,
             model=model,
@@ -72,7 +72,7 @@ def claude_vision_response(message, history, image=None):
 
         try:
             message =  client.messages.create(
-                max_tokens=1024,
+                max_tokens=4096,
                 system="You are Claude 3.0 trained by Anthropic. Your goal is to help the user with image analysis.",
                 messages=history_response,
                 model="claude-3-opus-20240229",
