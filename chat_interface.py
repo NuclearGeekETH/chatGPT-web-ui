@@ -571,9 +571,9 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             bot = gr.Chatbot(render=False)
 
             dropdown = gr.Dropdown(
-                ["gemini-pro", "gemini-1.5-pro-latest", "gemini-1.0-pro"],
+                ["gemini-2.0-flash-exp", "gemini-pro", "gemini-1.5-pro-latest", "gemini-1.0-pro"],
                 label = "Google Gemini Model",
-                value = "gemini-1.0-pro",
+                value = "gemini-2.0-flash-exp",
                 render = False
             )
 

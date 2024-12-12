@@ -6,3 +6,5 @@ venv
 video.mp4
 *.pyc
 /executable_test
+/quizzes
+build_quizzes.py

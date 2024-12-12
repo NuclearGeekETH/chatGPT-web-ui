@@ -113,6 +113,35 @@ def chat_document_response(message, history, document, model, system):
         #Handle API error here, e.g. retry or log
         return(f"OpenAI API returned an API Error: {e}")
 
+def quiz_response(message, document, model, system):
+    if is_url(document):
+        document_data = get_website_data(document)
+    else:
+        document_data = load_document_into_memory(document)
+
+    history_response = []
+
+    history_response.append({"role": "system", "content": f"{system} Current Date: {date.today()}, Document Data: {document_data}"})
+
+    history_response.append({"role": "user", "content": message})
+
+    try:
+        completion = openai.chat.completions.create(
+            model = model,
+            messages = history_response,
+            response_format={ "type": "json_object" }
+        )
+
+        completion_response = completion.choices[0].message.content
+
+        print(completion_response)
+
+        return completion_response
+
+    except Exception as e:
+        #Handle API error here, e.g. retry or log
+        return(f"OpenAI API returned an API Error: {e}")
+
 def chat_job_response(message, history, document, link, model, system):
     try:
         website_data = get_website_data(link)
