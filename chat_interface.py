@@ -1,6 +1,7 @@
 import gradio as gr
 from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response, chat_document_response, chat_job_response, video_response, voice_chat_response, vision_gallery_response, realtime_response
 from modules.get_gemini_response import google_chat_response, google_vision_response
+from modules.get_google_imagen import imagen_response
 from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response, resize_image
 from modules.get_flux_response import flux_text_to_image_response
 from modules.get_azure_response import bing_news, bing_search
@@ -22,9 +23,9 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             bot = gr.Chatbot(render=False)
 
             dropdown = gr.Dropdown(
-                ["o1-preview", "o1-mini", "gpt-4o-2024-08-06", "gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest", "gpt-4-0125-preview", "gpt-4-turbo", "gpt-4-1106-preview", "gpt-4"],
+                ["gpt-4o-2024-11-20", "o1-preview", "o1-mini", "gpt-4o-2024-08-06", "gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest", "gpt-4-0125-preview", "gpt-4-turbo", "gpt-4-1106-preview", "gpt-4"],
                 label = "Model",
-                value = "gpt-4o",
+                value = "gpt-4o-2024-11-20",
                 render = False
             )
 
@@ -350,9 +351,9 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             bot = gr.Chatbot(render=False)
 
             dropdown = gr.Dropdown(
-                ["llama3.1", "codestral", "dolphin-llama3", "llama3", "llama2", "codellama", "dolphincoder", "llama2-uncensored", "gemma", "mistral", "dolphin-mistral", "wizard-vicuna-uncensored", "openchat", "mixtral", "dolphin-mixtral", "neural-chat", "deepseek-coder", "phi"],
+                ollama_model_list,
                 label = "Model",
-                value = "llama3.1",
+                value = ollama_model_list[0],
                 render = False
             )
 
@@ -366,7 +367,8 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             chat = gr.ChatInterface(
                 fn = ollama_chat_response,
                 chatbot = bot,
-                additional_inputs = [dropdown, system]
+                additional_inputs = [dropdown, system],
+                type="tuples"
             )
 
             gr.Examples(
@@ -397,7 +399,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                     ]
                 ],
                 inputs = system,
-                label = "System Message Examples"
+                label = "System Message Examples",
             )
 
         # Ollama Vision Tab
@@ -604,6 +606,19 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                         chatbot = bot,
                         additional_inputs = [image]
                     )
+
+        # Imagen Tab
+        with gr.Tab("Imagen"):
+            gr.Markdown(f"<p>{'Create images with Imagen'}</p>")
+
+            bot = gr.Chatbot(render=False)
+
+            chat = gr.Interface(
+                fn = imagen_response,
+                inputs = [gr.Text(label="Input Prompt")], 
+                outputs=[gr.Image(type="numpy", label="Output Image")]
+            )
+
 
     with gr.Tab("Stability AI"):
 

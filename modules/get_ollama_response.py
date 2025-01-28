@@ -1,4 +1,5 @@
 import ollama
+from ollama import chat
 import base64
 import io
 from .get_document_data import load_document_into_memory, get_website_data
@@ -20,10 +21,10 @@ def ollama_chat_response(message, history, model, system):
         history_response.append({"role": "assistant", "content": assistant})
 
     history_response.append({"role": "user", "content": message})
-    history_response.append({"role": "system", "content": system})
+    # history_response.append({"role": "system", "content": system})
 
     try:
-        stream = ollama.chat(
+        stream = chat(
             model=model,
             messages=history_response,
             stream=True,
@@ -31,8 +32,14 @@ def ollama_chat_response(message, history, model, system):
 
         partial_message = ""
         for chunk in stream:
+            # print(chunk)
             if chunk:
-                partial_message = f"{partial_message}{str(chunk['message']['content'])}" 
+                print(chunk['message']['content'], end='', flush=True)
+                # Remove <think> and </think> tags
+                cleaned_content = str(chunk['message']['content']).replace("<think>", "").replace("</think>", "")
+
+                # Append to partial_message
+                partial_message = f"{partial_message}{cleaned_content}"
                 yield partial_message
 
     except Exception as e:
