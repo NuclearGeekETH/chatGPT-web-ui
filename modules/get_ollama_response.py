@@ -36,7 +36,7 @@ def ollama_chat_response(message, history, model, system):
             if chunk:
                 print(chunk['message']['content'], end='', flush=True)
                 # Remove <think> and </think> tags
-                cleaned_content = str(chunk['message']['content']).replace("<think>", "").replace("</think>", "")
+                cleaned_content = str(chunk['message']['content']).replace("<think>", "**THINKING**\n").replace("</think>", "\n**DONE THINKING**\n___")
 
                 # Append to partial_message
                 partial_message = f"{partial_message}{cleaned_content}"
