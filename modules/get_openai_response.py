@@ -21,58 +21,73 @@ key = os.getenv("OPENAI_API_KEY")
 
 openai.api_key = key
 
-def chat_response(message, history, model, system):
+def chat_response(message, history, model, system, reasoning_effort):
     print(history)
+
+    def build_history_response(history, include_system=False):
+        history_response = []
+        if include_system:
+            history_response.append({"role": "system", "content": f"{system} Current Date: {date.today()}"})
+        for human, assistant in history:
+            history_response.append({"role": "user", "content": human})
+            history_response.append({"role": "assistant", "content": assistant})
+        history_response.append({"role": "user", "content": message})
+        return history_response
 
     try:
         test_models = ["o1-preview", "o1-mini"]
-        if model in test_models:
-            history_response = []
+        reasoning_models = ["o3-mini-2025-01-31"]
 
-
-            for human, assistant in history:
-                history_response.append({"role": "user", "content": human})
-                history_response.append({"role": "assistant", "content": assistant})
-
-            history_response.append({"role": "user", "content": message})
+        if model in reasoning_models:
+            history_response = build_history_response(history, include_system=True)
             
+            # Request completion with streaming enabled
             completion = openai.chat.completions.create(
-                model = model,
-                messages = history_response,
-            )
-
-            answer = completion.choices[0].message.content
-
-            yield answer 
-                  
-        else:
-            history_response = []
-
-            history_response.append({"role": "system", "content": f"{system} Current Date: {date.today()}"})
-
-            for human, assistant in history:
-                history_response.append({"role": "user", "content": human})
-                history_response.append({"role": "assistant", "content": assistant})
-
-            history_response.append({"role": "user", "content": message})
-            
-            completion = openai.chat.completions.create(
-                model = model,
-                messages = history_response,
+                model=model,
+                messages=history_response,
+                reasoning_effort=reasoning_effort,
                 stream=True
             )
 
             # Stream Response
             partial_message = ""
             for chunk in completion:
-                if chunk.choices[0].delta.content != None:
-                    partial_message = partial_message + str(chunk.choices[0].delta.content)
-                    if partial_message:
-                        yield partial_message
+                if chunk.choices[0].delta.content:  # Ensure content is not None
+                    partial_message += chunk.choices[0].delta.content
+                    yield partial_message
+
+        elif model in test_models:
+            history_response = build_history_response(history, include_system=False)
+
+            # Request completion without streaming
+            completion = openai.chat.completions.create(
+                model=model,
+                messages=history_response,
+            )
+
+            answer = completion.choices[0].message.content
+            yield answer
+
+        else:
+            history_response = build_history_response(history, include_system=True)
+
+            # Request completion with streaming enabled
+            completion = openai.chat.completions.create(
+                model=model,
+                messages=history_response,
+                stream=True
+            )
+
+            # Stream Response
+            partial_message = ""
+            for chunk in completion:
+                if chunk.choices[0].delta.content:  # Ensure content is not None
+                    partial_message += chunk.choices[0].delta.content
+                    yield partial_message
 
     except Exception as e:
-        #Handle API error here, e.g. retry or log
-        return(f"OpenAI API returned an API Error: {e}")
+        # Handle API error: retry, log, or notify
+        yield f"OpenAI API returned an API Error: {e}"
 
 def is_url(s):
     result = urlparse(s)

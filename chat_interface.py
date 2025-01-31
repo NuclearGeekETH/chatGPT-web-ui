@@ -29,6 +29,13 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 render = False
             )
 
+            reasoning_effort = gr.Dropdown(
+                ["low", "medium", "high"],
+                label = "Reasoning Effort",
+                value = "medium",
+                render = False
+            )
+
             system = gr.Textbox(
                 lines = 2,
                 label = "System Message",
@@ -39,7 +46,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             chat = gr.ChatInterface(
                 fn = chat_response,
                 chatbot = bot,
-                additional_inputs = [dropdown, system]
+                additional_inputs = [dropdown, system, reasoning_effort]
             )
 
             gr.Examples(
