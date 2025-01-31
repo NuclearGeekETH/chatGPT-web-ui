@@ -23,7 +23,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             bot = gr.Chatbot(render=False)
 
             dropdown = gr.Dropdown(
-                ["gpt-4o-2024-11-20", "o1-preview", "o1-mini", "gpt-4o-2024-08-06", "gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest", "gpt-4-0125-preview", "gpt-4-turbo", "gpt-4-1106-preview", "gpt-4"],
+                ["gpt-4o-2024-11-20", "o3-mini-2025-01-31", "o1-preview", "o1-mini", "gpt-4o-2024-08-06", "gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest", "gpt-4-0125-preview", "gpt-4-turbo", "gpt-4-1106-preview", "gpt-4"],
                 label = "Model",
                 value = "gpt-4o-2024-11-20",
                 render = False
