@@ -91,3 +91,5 @@ def google_vision_response(message, history, image=None):
 
         return answer
 
+
+

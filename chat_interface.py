@@ -1,6 +1,8 @@
 import gradio as gr
 from modules.get_openai_response import chat_response, dalle_response, tts_response, vision_response, chat_document_response, chat_job_response, video_response, voice_chat_response, vision_gallery_response, realtime_response
 from modules.get_gemini_response import google_chat_response, google_vision_response
+from modules.get_google_image_chat import google_image_chat_response
+from modules.google_utils import run_detection
 from modules.get_google_imagen import imagen_response
 from modules.get_stability_response import stable_text_to_image_response, stable_image_to_image_response, stable_image_upscale_response, stable_image_to_video_response, resize_image
 from modules.get_flux_response import flux_text_to_image_response
@@ -23,7 +25,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
             bot = gr.Chatbot(render=False)
 
             dropdown = gr.Dropdown(
-                ["gpt-4o-2024-11-20", "o3-mini-2025-01-31", "o1-preview", "o1-mini", "gpt-4o-2024-08-06", "gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest", "gpt-4-0125-preview", "gpt-4-turbo", "gpt-4-1106-preview", "gpt-4"],
+                ["gpt-4o-2024-11-20", "gpt-4.5-preview", "o3-mini-2025-01-31", "o1-preview", "o1-mini", "gpt-4o-2024-08-06", "gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest", "gpt-4-0125-preview", "gpt-4-turbo", "gpt-4-1106-preview", "gpt-4"],
                 label = "Model",
                 value = "gpt-4o-2024-11-20",
                 render = False
@@ -74,6 +76,9 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                     ],
                     [
                         "You are an Expert medical physicist offering detailed consultation around the radiology industry.",
+                    ],
+                    [
+                        "You are a highly capable, thoughtful, and precise assistant. Your goal is to deeply understand the user's intent, ask clarifying questions when needed, think step-by-step through complex problems, provide clear and accurate answers, and proactively anticipate helpful follow-up information. Always prioritize being truthful, nuanced, insightful, and efficient, tailoring your responses specifically to the user's needs and preferences."
                     ]
                 ],
                 inputs = system,
@@ -613,6 +618,69 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                         chatbot = bot,
                         additional_inputs = [image]
                     )
+
+                # GoogleGemini Tab
+        with gr.Tab("gemini-2.0-flash"):
+            # GoogleChatVision Tab
+            with gr.Tab("Create and Edit Images"):
+                gr.Markdown(f"<p>{'Ask Google Gemini to generate and edit images'}</p>")
+                with gr.Row():
+                    bot = gr.Chatbot(render=False)
+
+                    input_image = gr.Image(
+                        label = "Image Input",
+                        type = "filepath",
+                        render = False,
+                        height = "512",
+                        width = "512"
+                    )
+
+                    output_image = gr.Image(
+                        label = "Image Output",
+                        type = "pil",
+                        render = True,
+                        height = "512",
+                        width = "512",
+                    )
+
+                    with gr.Column(scale=1):
+
+                        chat = gr.ChatInterface(
+                            fn = google_image_chat_response,
+                            chatbot = bot,
+                            additional_inputs = [input_image],
+                            additional_outputs=[output_image]
+                        )
+
+            with gr.Tab("2D Label Images"):
+                gr.Markdown(f"<p>{'Ask Google Gemini to label images in 2D'}</p>")
+                with gr.Row():
+                    input_image = gr.Image(
+                        label = "Image Input",
+                        type = "filepath",
+                        render = False,
+                        height = "512",
+                        width = "512"
+                    )
+
+                    output_image = gr.Image(
+                        label = "Image Output",
+                        type = "pil",
+                        render = False,
+                        height = "512",
+                        width = "512",
+                    )
+
+                    model_name = gr.Text(label="Model", value = "gemini-2.0-flash-exp", render=False)
+
+                    with gr.Column(scale=1):
+
+                        chat = gr.Interface(
+                            fn = run_detection,
+                            inputs = [gr.Text(label="Input Prompt", value ="Detect the 2d bounding boxes of the fruit (with 'label' as fruit type)."), input_image, model_name],
+                            outputs=[output_image],
+                            flagging_mode="never"
+                        )
 
         # Imagen Tab
         with gr.Tab("Imagen"):
