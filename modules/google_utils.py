@@ -90,7 +90,7 @@ def plot_bounding_boxes(image, bounding_boxes):
 
     return image
 
-def detect_objects(image_path, prompt, model_name):
+def detect_objects(image_path, prompt):
     """
     Load an image and use the Gemini API for object detection and bounding box generation.
     """
@@ -99,7 +99,7 @@ def detect_objects(image_path, prompt, model_name):
 
     # Prompt the model
     response = client.models.generate_content(
-        model=model_name,
+        model="gemini-2.0-flash-exp",
         contents=[prompt, im],
         config=types.GenerateContentConfig(
             system_instruction=bounding_box_system_instructions,
@@ -107,7 +107,7 @@ def detect_objects(image_path, prompt, model_name):
             safety_settings=safety_settings,
         ),
     )
-    # print(f"Model Response: {response.text}")
+    print(f"Model Response: {response.text}")
     return im, response.text
 
 def run_detection(prompt, image):

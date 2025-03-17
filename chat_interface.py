@@ -671,13 +671,11 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                         width = "512",
                     )
 
-                    model_name = gr.Text(label="Model", value = "gemini-2.0-flash-exp", render=False)
-
                     with gr.Column(scale=1):
 
                         chat = gr.Interface(
                             fn = run_detection,
-                            inputs = [gr.Text(label="Input Prompt", value ="Detect the 2d bounding boxes of the fruit (with 'label' as fruit type)."), input_image, model_name],
+                            inputs = [gr.Text(label="Input Prompt", value ="Detect the 2d bounding boxes of the fruit (with 'label' as fruit type)."), input_image],
                             outputs=[output_image],
                             flagging_mode="never"
                         )
