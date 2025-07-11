@@ -73,7 +73,7 @@ def google_vision_response(message, history, image=None):
 
     if image:
         try:
-            model = genai.GenerativeModel('gemini-pro-vision')
+            model = genai.GenerativeModel('gemini-2.0-flash')
             # response = model.generate_content(image)
             response = model.generate_content(
                 [message, image],

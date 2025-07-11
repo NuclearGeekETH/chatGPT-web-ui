@@ -2,9 +2,16 @@
 /.venv
 venv
 *.mp3
+*.mp4
+*.xlsx
+*.csv
+*.raw
+*.wav
 /modules/__pycache__
 video.mp4
 *.pyc
 /executable_test
 /quizzes
 build_quizzes.py
+isotopes.py
+therapy/data.json

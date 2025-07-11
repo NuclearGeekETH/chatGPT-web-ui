@@ -36,7 +36,7 @@ def chat_response(message, history, model, system, reasoning_effort):
 
     try:
         test_models = ["o1-preview", "o1-mini"]
-        reasoning_models = ["o3-mini-2025-01-31"]
+        reasoning_models = ["o4-mini-2025-04-16", "o3-2025-04-16", "o3-mini-2025-01-31"]
 
         if model in reasoning_models:
             history_response = build_history_response(history, include_system=True)

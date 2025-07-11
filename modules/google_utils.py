@@ -16,8 +16,8 @@ client = genai.Client(api_key=GOOGLE_API_KEY)
 
 # Bounding Box System Instructions
 bounding_box_system_instructions = """
-    Return bounding boxes as a JSON array with labels. Never return masks or code fencing. Limit to 25 objects.
-    If an object is present multiple times, name them according to their unique characteristic (colors, size, position, unique characteristics, etc.).
+    Return bounding boxes as a JSON array with labels. Never return masks or code fencing. 
+    If an object is present multiple times, name them according to their unique characteristic (colors, size, position, unique characteristics, count etc.).
 """
 
 # Safety Settings
