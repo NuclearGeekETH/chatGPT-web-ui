@@ -7,6 +7,7 @@ venv
 *.csv
 *.raw
 *.wav
+*.png
 /modules/__pycache__
 video.mp4
 *.pyc

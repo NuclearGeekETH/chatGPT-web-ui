@@ -92,6 +92,10 @@ def reset_conversation():
     global last_response_id
     last_response_id = None
 
+def set_response_id(response_id):
+    global last_response_id
+    last_response_id= last_response_id
+
 last_response_id = None  # For real use, store in session/state
 
 def encode_image(image_path):
@@ -104,6 +108,8 @@ def encode_image(image_path):
 
 def multi_modal_response(message, history, model, system):
     global last_response_id
+
+    print(f"Current Response ID: {last_response_id}")
 
     if system:
         if isinstance(system, dict):

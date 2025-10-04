@@ -1,5 +1,5 @@
 import gradio as gr
-from modules.get_openai_response import chat_response, multi_modal_response, reset_conversation, dalle_response, tts_response, vision_response, chat_document_response, chat_job_response, video_response, voice_chat_response, vision_gallery_response, realtime_response
+from modules.get_openai_response import chat_response, multi_modal_response, reset_conversation, set_response_id, dalle_response, tts_response, vision_response, chat_document_response, chat_job_response, video_response, voice_chat_response, vision_gallery_response, realtime_response
 from modules.get_gemini_response import google_chat_response, google_vision_response
 from modules.get_google_image_chat import google_image_chat_response
 from modules.get_xai_response import xai_chat_response
@@ -30,20 +30,26 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 render = False
             )
 
-            system = gr.MultimodalTextbox(
+            system = gr.Textbox(
                 lines = 5,
                 label = "System Message",
-                file_count="multiple",
-                file_types=["image"],
-                sources=["upload"],
                 value = "You are ChatGPT, a large language model trained by OpenAI based on the GPT-5 architecture.",
-
                 render = False
                 )
             
             button = gr.Button("Reset Chat", size="md")
 
             button.click(fn=reset_conversation)
+
+            response_id = gr.Textbox(
+                lines = 1,
+                label = "Response ID", 
+                value = None,
+            )
+
+            button = gr.Button("Set Response ID", size="md")
+
+            button.click(fn=set_response_id, inputs=response_id)
 
             chat = gr.ChatInterface(
                 fn = multi_modal_response,
