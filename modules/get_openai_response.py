@@ -3,13 +3,12 @@ import os
 import base64
 import io
 import wave
+import mimetypes
 import numpy as np
 from dotenv import load_dotenv
 from datetime import date
 from PIL import Image
 from pathlib import Path
-from pydub import AudioSegment
-import soundfile as sf
 from urllib.parse import urlparse
 import cv2
 from moviepy.editor import VideoFileClip
@@ -88,6 +87,111 @@ def chat_response(message, history, model, system, reasoning_effort):
     except Exception as e:
         # Handle API error: retry, log, or notify
         yield f"OpenAI API returned an API Error: {e}"
+
+def reset_conversation():
+    global last_response_id
+    last_response_id = None
+
+last_response_id = None  # For real use, store in session/state
+
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        encoded = base64.b64encode(image_file.read()).decode("utf-8")
+    mime, _ = mimetypes.guess_type(image_path)
+    if mime is None:
+        mime = "image/png"
+    return f"data:{mime};base64,{encoded}"
+
+def multi_modal_response(message, history, model, system):
+    global last_response_id
+
+    if system:
+        if isinstance(system, dict):
+            system_text = system.get("text", "")
+        else:
+            system_text = str(system)
+        system_prompt = f"{system_text} Current Date: {date.today()}"
+    else:
+        system_prompt = f"Current Date: {date.today()}"
+
+    user_text = message.get("text") if isinstance(message, dict) else str(message)
+    user_files = message.get("files", []) if isinstance(message, dict) else []
+
+    request_kwargs = {
+        "model": model,
+        "tools": [{"type": "image_generation"}],
+        "stream": True
+    }
+
+    # --- FIRST message: full prompt/context ---
+    if last_response_id is None:
+        input_blocks = [{"role": "system", "content": system_prompt}]
+        if user_text:
+            user_content = [{"type": "input_text", "text": user_text}]
+            for f in user_files:
+                file_path = f if isinstance(f, str) else f.get("path")
+                mime_type = f.get("mimetype") if isinstance(f, dict) else None
+                if not mime_type:
+                    mime_type, _ = mimetypes.guess_type(file_path)
+                if mime_type and mime_type.startswith("image/") and os.path.exists(file_path):
+                    image_url = encode_image(file_path)
+                    user_content.append({"type": "input_image", "image_url": image_url})
+
+            input_blocks.append({"role": "user", "content": user_content})
+
+        request_kwargs["input"] = input_blocks
+
+    # --- EVERY FOLLOWUP: ONLY latest message and images + prev id ---
+    else:
+        content_blocks = []
+        if user_text:
+            user_content = [{"type": "input_text", "text": user_text}]
+            for f in user_files:
+                file_path = f if isinstance(f, str) else f.get("path")
+                mime_type = f.get("mimetype") if isinstance(f, dict) else None
+                if not mime_type:
+                    mime_type, _ = mimetypes.guess_type(file_path)
+                if mime_type and mime_type.startswith("image/") and os.path.exists(file_path):
+                    image_url = encode_image(file_path)
+                    user_content.append({"type": "input_image", "image_url": image_url})                
+
+            content_blocks.append({"role": "user", "content": user_content})
+
+            request_kwargs["input"] = content_blocks
+
+        request_kwargs["previous_response_id"] = last_response_id
+
+    try:
+        # print(f"SENDING TO OPENAI: {request_kwargs}")
+        stream = openai.responses.create(**request_kwargs)
+
+        # print(f"stream: {stream}")
+
+        partial_message = ""
+        files = []
+        for event in stream:
+            # print(f"event: {event}")
+            etype = getattr(event, "type", None)
+            # print(etype)
+            if getattr(event, "type", None) == "response.completed" or event.__class__.__name__ == "ResponseCompletedEvent":
+                last_response_id = event.response.id
+            if etype == "response.image_generation_call.partial_image":
+                idx = event.partial_image_index
+                image_base64 = event.partial_image_b64
+                image_bytes = base64.b64decode(image_base64)
+                filename = f"river{idx}.png"
+                with open(filename, "wb") as f:
+                    f.write(image_bytes)
+                files.append(filename)
+                yield {"text": "Image is created:", "files": files}
+
+            if etype == "response.output_text.delta":
+                if getattr(event, "delta", None):
+                    partial_message += event.delta
+                    yield {"text": partial_message, "files": files if files else []}
+
+    except Exception as e:
+        yield {"text": f"OpenAI API returned an API Error: {e}", "files": []}   
 
 def is_url(s):
     result = urlparse(s)

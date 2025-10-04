@@ -17,7 +17,7 @@ GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 client = genai.Client(api_key=GOOGLE_API_KEY)
 
 # Create the chat at the global level to persist the history
-MODEL_ID = "gemini-2.0-flash-exp"
+MODEL_ID = "gemini-2.5-flash-image-preview"
 chat = client.chats.create(
     model=MODEL_ID,
     config=types.GenerateContentConfig(
