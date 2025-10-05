@@ -55,6 +55,12 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 fn = multi_modal_response,
                 type="messages",
                 multimodal=True,
+                textbox=gr.MultimodalTextbox(
+                    file_count="multiple", 
+                    file_types=["image"],
+                    sources=["upload"],
+                    max_plain_text_length=50000,
+                ),
                 additional_inputs = [dropdown, system]
             )
 
