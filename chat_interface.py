@@ -47,6 +47,14 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 value = None,
             )
 
+            textbox=gr.MultimodalTextbox(
+                file_count="multiple", 
+                file_types=["image"],
+                sources=["upload"],
+                max_plain_text_length=50000,
+                render=False,
+            )
+
             button = gr.Button("Set Response ID", size="md")
 
             button.click(fn=set_response_id, inputs=response_id)
@@ -55,12 +63,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Nuke's AI Playground") as demo:
                 fn = multi_modal_response,
                 type="messages",
                 multimodal=True,
-                textbox=gr.MultimodalTextbox(
-                    file_count="multiple", 
-                    file_types=["image"],
-                    sources=["upload"],
-                    max_plain_text_length=50000,
-                ),
+                textbox=textbox,
                 additional_inputs = [dropdown, system]
             )
 
